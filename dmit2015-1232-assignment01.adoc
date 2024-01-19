@@ -5,9 +5,9 @@
 == OBJECTIVE
 Upon completion of this assignment, you will have demonstrated the ability to:
 
-- Invoke RESTful services over HTTP using a REST Client
-- Create a Jakarta Faces web application that calls a REST API Client to perform CRUD operations on data in a Firebase Realtime Database
-
+- Create a REST Client for a Firebase Realtime Database.
+- Create a Jakarta Faces web application that calls a REST API Client to post and get data from a Firebase Realtime Database
+- Convert a Blazor WebApp Razor Component to a Jakarta Faces page.
 
 == PROBLEM DESCRIPTION
 In this assignment you are going to build a web application using Jakarta Faces and the Microprofile REST Client to perform CRUD operations on a dataset stored in a Firebase Realtime Database.
