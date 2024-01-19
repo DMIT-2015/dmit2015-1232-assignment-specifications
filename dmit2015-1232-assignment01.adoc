@@ -11,10 +11,9 @@ Upon completion of this assignment, you will have demonstrated the ability to:
 - Convert a Blazor WebApp Razor Component to a Jakarta Faces page.
 
 == PROBLEM DESCRIPTION
-In this assignment you are going to build a web application using Jakarta Faces and the Microprofile REST Client to perform CRUD operations on a dataset stored in a Firebase Realtime Database.
+In this assignment you are going to build a web application using Jakarta Faces and the Microprofile REST Client to post and get data stored in a Firebase Realtime Database.
 Think of a subject (Baseball, BasketBall, Beer, Camera, Chess, Class Of Clans, Computer, etc) of your dataset that must at contain at minimum three data fields. 
-The subject of the dataset *cannot* be a subject used in a class demontration such as Todo and Movie.
-Form field validation is expected for at minimum one of the data fields.
+The subject of the dataset *cannot* be a subject used in a class demonstration such as VideoGame, Todo, or Movie.
 The datset must contain at minimum one `String` data type and one non `String` data type.
 
 == GIT REPOSITORY SETUP
