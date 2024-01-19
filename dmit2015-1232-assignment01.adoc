@@ -202,11 +202,7 @@ shows a table with 5 random generated data for weather forecast.
 
 <p>This component demonstrates showing data.</p>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
+@if (forecasts != null)
 {
     <table class="table">
         <thead>
