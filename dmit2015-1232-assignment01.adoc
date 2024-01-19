@@ -195,7 +195,7 @@ You can use the file template *DMIT2015 Faces Document CRUD List Page* to create
 
 . Create and code a Faces web page and its supporting Java classes to convert the following Microsoft Blazor WebApp Weather Razor Component that
 shows a table with 5 random generated data for weather forecast. 
-
++
 [source, csharp]
 ----
 <h1>Weather</h1>
@@ -251,7 +251,7 @@ shows a table with 5 random generated data for weather forecast.
     }
 }
 ----
-
++
 . Modify `src/main/webapp/WEB-INF/faces-templates/layout.xhtml` and add menuitem to the Faces web pages you created.
 
 
@@ -278,7 +278,7 @@ shows a table with 5 random generated data for weather forecast.
 | Demonstrate Faces home page that contains a description of the assignment and a image of yourself.
 | 1
 
-| Demonstrate Faces web page to list all data in your Firebase Realtime Database.
+| Demonstrate Faces web page that shows all data in your Firebase Realtime Database.
 Show the code that you are getting data from the Firebase Realtime Database REST API.
 | 2
 
@@ -289,7 +289,7 @@ Demonstrate the function to generating data for all of the form fields using Dat
 
 | 2
 
-| Demonstrate Faces web page to showing generated weather data.
+| Demonstrate Faces web page that shows generated weather data.
 | 2
 
 |===
