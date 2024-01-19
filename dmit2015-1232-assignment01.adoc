@@ -1,0 +1,315 @@
+= DMIT2015 Assignment 1 - Jakarta Faces and REST API Client
+:source-highlighter: rouge
+:max-width: 90%
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+- Invoke RESTful services over HTTP using a REST Client
+- Create a Jakarta Faces web application that calls a REST API Client to perform CRUD operations on data in a Firebase Realtime Database
+
+
+== PROBLEM DESCRIPTION
+In this assignment you are going to build a web application using Jakarta Faces and the Microprofile REST Client to perform CRUD operations on a dataset stored in a Firebase Realtime Database.
+Think of a subject (Baseball, BasketBall, Beer, Camera, Chess, Class Of Clans, Computer, etc) of your dataset that must at contain at minimum three data fields. 
+The subject of the dataset *cannot* be a subject used in a class demontration such as Todo and Movie.
+Form field validation is expected for at minimum one of the data fields.
+The datset must contain at minimum one `String` data type and one non `String` data type.
+
+== GIT REPOSITORY SETUP
+. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Click on *Accept this assignment* to allow github to create a private github repository for you.
+. Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
+. Click on *Clone or download* button then copy the URL to your repository to the clipboard.
+. You can now import the git repository to the *~/IdeaProjects* folder from IntelliJ IDEA.
+
+== PROJECT SETUP
+. Open IntelliJ IDEA and create a new project using the *Jakarta EE* module and change following settings:
+ .. Name: `dmit2015-assignment01-yourname`
+ .. Location: `~/IdeaProjects/dmit2015-1232-assignment01`
+ .. Template: `Web application`
+ .. Application server: `<No appliation server>`  
+ .. Group: `dmit2015`
+ .. Artifact: `assignment01-yourname`
+. Check Next.
+. On the Dependencies dialog, change the Version to *Jakarta EE 10* the select the following specifications:
+.. Bean validation
+.. Contexts and Dependency Injection (CDI)
+.. JSON Binding (JSON-B)
+.. JSON Procesing (JSON-P)
+.. RESTful Web Servcies (JAX-RS)
+.. Server Faces (JSF)
+.. Servlet
+. Click *Create* 
+. Make the following changes to `pom.xml`
+* Change the element value for both `maven.compiler.target` and `maven.compiler.source` to `*21*`.
+* Change the element value for `junit.version` to `*5.10.1*`.
+
+* *Add* the following dependencies to the `<dependencies>` element.
+    
+poml.xml
+[source, xml]
+----
+<!-- DataFaker is for creating fake data using a provider -->
+<dependency>
+    <groupId>net.datafaker</groupId>
+    <artifactId>datafaker</artifactId>
+    <version>2.1.0</version>
+</dependency>
+
+<!-- Eclipse Microprofile is for build Microservices  -->
+<dependency>
+    <groupId>org.eclipse.microprofile</groupId>
+    <artifactId>microprofile</artifactId>
+    <version>6.0</version>
+    <type>pom</type>
+    <scope>provided</scope>
+</dependency>
+
+<!-- Lombok is for generating getters/setters -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.30</version>
+    <scope>provided</scope>
+</dependency>
+
+<!-- Additional tools to use with Jakarta Faces -->
+<dependency>
+    <groupId>org.primefaces</groupId>
+    <artifactId>primefaces</artifactId>
+    <version>13.0.4</version>
+    <classifier>jakarta</classifier>
+</dependency>
+<dependency>
+    <groupId>org.webjars.npm</groupId>
+    <artifactId>primeflex</artifactId>
+    <version>3.3.1</version>
+</dependency>
+<dependency>
+    <groupId>org.omnifaces</groupId>
+    <artifactId>omnifaces</artifactId>
+    <version>4.3</version>
+</dependency>
+
+----
+
+* Add the following dependencies to the `<plugins>` element.
+
+poml.xml
+[source, xml]
+----
+<!-- Plugin to build a bootable JAR for WildFly -->
+<plugin>
+    <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_dev_mode -->
+    <!-- mvn wildfly-jar:dev-watch -->
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>11.0.0.Beta1</version>
+    <configuration>
+        <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#31.0.0.Beta1</feature-pack-location>
+        <layers>
+            <!-- https://docs.wildfly.org/30/Bootable_Guide.html#wildfly_layers -->
+            <layer>cloud-server</layer>
+            <layer>jsf</layer>
+            <layer>microprofile-config</layer>
+            <layer>microprofile-rest-client</layer>
+        </layers>
+        <excluded-layers>
+            <layer>deployment-scanner</layer>
+        </excluded-layers>
+        <plugin-options>
+            <jboss-fork-embedded>true</jboss-fork-embedded>
+        </plugin-options>
+        <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_enabling_debug -->
+        <jvmArguments>
+            <!-- https://www.jetbrains.com/help/idea/attaching-to-local-process.html#attach-to-local -->
+            <!-- To attach a debugger to the running server from IntelliJ IDEA
+                1. From the main menu, choose `Run | Attach to Process`
+                2. IntelliJ IDEA will show the list of running local processes. Select the process with the `xxx-bootable.jar` name to attach to.
+            -->
+            <arg>-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</arg>
+        </jvmArguments>
+        <timeout>120</timeout>
+
+        <!-- Build a bootable JAR for cloud environment. -->
+        <cloud />
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+
+----
+
+[start=6]
+ . Create the following Java packages and classes in your projects:
+    .. `dmit2015.restclient` 
+    .. `dmit2015.faces`
+. In the `src/main/webapp/WEB-INF` folder, create a new directory named *faces-templates*.
+. In the `src/main/webapp/WEB-INF/faces-templates` folder, create a file using the *DMIT2015 Faces Template* file template.
+. Sign to https://console.firebase.google.com/[Firebase Console] and create a new project named *dmit2015-yourname* 
+.. Create a new Firebase Realtime Database that start in *test mode*
+
+== Live reload (re-deploy) your WildFly application
+The `wildfly-jar-maven-plugin` plugin you added to pom.xml can used to live reload (re-deploy) your application each time you save a file.
+To build and run your application, open a Terminal windows in IntelliJ and type:
+[source]
+----
+mvn wildfly-jar:dev-watch
+----
+The goal `dev-watch` is blocking. When done, type Ctrl-C in the console to stop the process.
+
+== REQUIREMENTS
+. In the `/src/main/webapp` folder of your project, create a new Faces page named *index.xhtml* using the file template *DMIT2015 Faces Composition Page* 
+then modify the content to include a description of the assignment and an image of you.
+Images must be stored in the `src/main/webapp/resources/img` folder of your project (you will need to create the `img` folder).
+You can display image from a Faces page using the PrimeFaces `p:graphicImage` tag as shown next for a file name `me.png` that is stored in the `src/main/webapp/resources/images` folder.
++
+[source, html]
+----
+<div class="ui-card">
+    <h2>About Me</h2>
+    <p:graphicImage value="#{resource['img/me.png']}" alt="Picture of me" />
+</div>
+----
++
+. Create a new file using the file template *DMIT2015 Firebase REST API Http Client* and modify the code to test endpoints to:
+.. Create new data
+.. Get all data
+
+. Create and code a Faces web page and its supporting Java classes to allow the user to enter values for three different form fields 
+and add the data to the Firebase Realtime Database. 
+You can use the file template *DMIT2015 Firebase REST API Faces CRUD Create View* to create the Faces backing bean class.
+You can use the file template *DMIT2015 Faces CRUD Create Page* to create the Faces web page.
+Add a button to generate data for at minium one of fields using the *Data Faker* library.
+Add a button to clear all form fields.
+
+. Create and code a Faces web page and its supporting Java classes to allow the user to view data from your Firebase Realtime Database.
+You can use the file template *DMIT2015 Firebase REST API Faces CRUD List View* to create the Faces backing bean class.
+You can use the file template *DMIT2015 Faces Document CRUD List Page* to create the Faces web page.
+
+. Create and code a Faces web page and its supporting Java classes to convert the following Microsoft Blazor WebApp Weather Razor Component that
+shows a table with 5 random generated data for weather forecast. 
+
+[source, csharp]
+----
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        {
+            Date = startDate.AddDays(index),
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = summaries[Random.Shared.Next(summaries.Length)]
+        }).ToArray();
+    }
+
+    private class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string? Summary { get; set; }
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}
+----
+
+. Modify `src/main/webapp/WEB-INF/faces-templates/layout.xhtml` and add menuitem to the Faces web pages you created.
+
+
+== CODING REQUIREMENTS
+* Firebase Realtime Database must at minimum *three* document(record) with meaningful data (*10%* deduction if you do not follow this requirement)
+* Do *NOT* reuse the instructor's demo project from this term or previous terms as your assigment project (*100%* deduction for re-submitting instructor work)
+* You *MUST* demo your assigment in person to your instructor (*50%* deduction if you do not demo in person)
+
+== MARKING GUIDE
+
+[cols="4,1"]
+|===
+| Demonstration Requirement | Marks
+
+| Demonstrate that you have added the IntelliJ IDEA File Templates for Firebase Realtime REST API and Jakarta Faces.
+| 1
+
+| Demonstrate your Http Request to create and get data using the Firebase Realtime Database REST API.
+| 1
+
+| Demonstrate navigation menu links for Home, Weather, Fetch Data, nnd Post Data.
+| 1
+
+| Demonstrate Faces home page that contains a description of the assignment and a image of yourself.
+| 1
+
+| Demonstrate Faces web page to list all data in your Firebase Realtime Database.
+Show the code that you are getting data from the Firebase Realtime Database REST API.
+| 2
+
+| Demonstrate Faces web page to add new data to the Firebase Realtime Database.
+Use the Firebase Console to verify data has been added to Firebase Realtime Database.
+
+Demonstrate the function to generating data for all of the form fields using DataFaker.
+
+| 2
+
+| Demonstrate Faces web page to showing generated weather data.
+| 2
+
+|===
+
+
+== SUBMISSION/DEMONSTRATION REQUIREMENTS
+* Commit and push your project to your git repository before the due date.
+* Demonstrate in person the demonstration requirements on the first class after the due date.
+
+== Resources
+* https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html[IntelliJ IDEA HTTP Client]
+* https://www.jetbrains.com/help/idea/exploring-http-syntax.html[IntelliJ IDEA HTTP request syntax]
+* https://github.com/eclipse/microprofile-rest-client[Rest Client for MicroProfile GitHub]
+* https://download.eclipse.org/microprofile/microprofile-rest-client-3.0/microprofile-rest-client-spec-3.0.html[Rest Client for MicroProfile Specification]
+* https://www.primefaces.org/showcase[PrimeFaces Showcase]
+* https://www.datafaker.net[Datafaker]
+* https://jakarta.ee/specifications/faces/4.0/jakarta-faces-4.0.html[Jakarta Server Faces Specification Documeent]
+* https://eclipse-ee4j.github.io/jakartaee-tutorial/#introduction-to-facelets[Introduction to Facelets]
+* https://eclipse-ee4j.github.io/jakartaee-tutorial/#expression-language[Expression Language]
