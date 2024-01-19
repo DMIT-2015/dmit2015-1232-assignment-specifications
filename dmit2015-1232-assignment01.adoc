@@ -5,6 +5,7 @@
 == OBJECTIVE
 Upon completion of this assignment, you will have demonstrated the ability to:
 
+- Create and use File Templates in IntelliJ IDEA.
 - Create a REST Client for a Firebase Realtime Database.
 - Create a Jakarta Faces web application that calls a REST API Client to post and get data from a Firebase Realtime Database
 - Convert a Blazor WebApp Razor Component to a Jakarta Faces page.
@@ -256,7 +257,10 @@ shows a table with 5 random generated data for weather forecast.
 
 
 == CODING REQUIREMENTS
-* Firebase Realtime Database must at minimum *three* document(record) with meaningful data (*10%* deduction if you do not follow this requirement)
+* Java package names must be all in lower case.
+* Java fields and methods must be in camelCase.
+* Java class name must be in PascalCase.
+* Jakarta Faces file names must be all in lower case.
 * Do *NOT* reuse the instructor's demo project from this term or previous terms as your assigment project (*100%* deduction for re-submitting instructor work)
 * You *MUST* demo your assigment in person to your instructor (*50%* deduction if you do not demo in person)
 
@@ -264,32 +268,33 @@ shows a table with 5 random generated data for weather forecast.
 
 [cols="4,1"]
 |===
-| Demonstration Requirement | Marks
+| Requirement | Marks
 
-| Demonstrate that you have added the IntelliJ IDEA File Templates for Firebase Realtime REST API and Jakarta Faces.
+| You have shown to your instructor that you have added the IntelliJ IDEA File Templates for Firebase Realtime REST API and Jakarta Faces.
+This is due at the beginning of class on week 3 day 1.
 | 1
 
-| Demonstrate your Http Request to create and get data using the Firebase Realtime Database REST API.
+| You have shown to your instructor your Http Request to create and get data using the Firebase Realtime Database REST API.
+This is due at the beginning of class on week 3 day 1.
 | 1
 
-| Demonstrate navigation menu links for Home, Weather, Fetch Data, nnd Post Data.
+| Navigation menu links for Home, Weather, Fetch Data, nnd Post Data navigate to their respective page.
 | 1
 
-| Demonstrate Faces home page that contains a description of the assignment and a image of yourself.
+| Home page contains a description of the assignment and a image of yourself.
 | 1
 
-| Demonstrate Faces web page that shows all data in your Firebase Realtime Database.
+| Fetch Data page shows all data in your Firebase Realtime Database.
 Show the code that you are getting data from the Firebase Realtime Database REST API.
 | 2
 
-| Demonstrate Faces web page to add new data to the Firebase Realtime Database.
+| Post Data page successfully post all data to the Firebase Realtime Database.
 Use the Firebase Console to verify data has been added to Firebase Realtime Database.
-
-Demonstrate the function to generating data for all of the form fields using DataFaker.
+You can click on a button generate data using DataFaker for each form field.
 
 | 2
 
-| Demonstrate Faces web page that shows generated weather data.
+| Weather page shows 5 different generated weather data each time the view is accessed.
 | 2
 
 |===
