@@ -310,6 +310,8 @@ You can click on a button generate data using DataFaker for each form field.
 * https://download.eclipse.org/microprofile/microprofile-rest-client-3.0/microprofile-rest-client-spec-3.0.html[Rest Client for MicroProfile Specification]
 * https://www.primefaces.org/showcase[PrimeFaces Showcase]
 * https://www.datafaker.net[Datafaker]
+* https://javadoc.io/doc/net.datafaker/datafaker/latest/net.datafaker/net/datafaker/providers/base/Number.html[Datafaker Number Provider]
+* https://www.baeldung.com/java-generating-random-numbers[Generating Random Numbers in Java]
 * https://jakarta.ee/specifications/faces/4.0/jakarta-faces-4.0.html[Jakarta Server Faces Specification Documeent]
 * https://eclipse-ee4j.github.io/jakartaee-tutorial/#introduction-to-facelets[Introduction to Facelets]
 * https://eclipse-ee4j.github.io/jakartaee-tutorial/#expression-language[Expression Language]
