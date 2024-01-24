@@ -1,0 +1,217 @@
+= DMIT2015 Assignment 2 - Token-Based Authentication REST API
+:source-highlighter: rouge
+:max-width: 90%
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+- Use Firebase Authentication to create users and add a Email/Password sing provider. 
+- Use Firebase Realtime Database security rules to restrict access to REST API endpoints
+- Write a REST Client to consume Firebase Authentication REST API endpoints.
+- Write a REST Client to use tokens with Firebase Realtime Database REST API endpoints
+- Create a multiuser data system where each user can manage their own data.
+
+== PROBLEM DESCRIPTION
+In this assignment you will create a new web application to address the following issues from the previous assignment:
+
+* A web page is need to allow an anonymous user to register as a user by entering a email and password. 
+* Authenticated users are allowed to manage their own collection of data and cannot access data created by other users.
+
+You can re-use the dataset from assignment 1 or create a new dataset.
+
+== GIT REPOSITORY SETUP
+. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Click on *Accept this assignment* to allow github to create a private github repository for you.
+. Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
+. Edit the `README.md` file on the root of your git repository with your name and Github username.
+. Click on *Clone or download* button then copy the URL to your repository to the clipboard.
+. You can now import the git repository to the *~/IdeaProjects* folder from IntelliJ IDEA.
+
+== PROJECT SETUP
+. Open IntelliJ IDEA and create a new project using the *Jakarta EE* module and change following settings:
+ .. Name: `dmit2015-assignment02-yourname`
+ .. Location: `~/IdeaProjects/dmit2015-1232-assignment02`
+ .. Template: `Web application`
+ .. Application server: `<No appliation server>`  
+ .. Group: `dmit2015`
+ .. Artifact: `assignment02-yourname`
+. Check Next.
+. On the Dependencies dialog, change the Version to *Jakarta EE 10* the select the following specifications:
+.. Bean validation
+.. Contexts and Dependency Injection (CDI)
+.. JSON Binding (JSON-B)
+.. JSON Procesing (JSON-P)
+.. RESTful Web Servcies (JAX-RS)
+.. Server Faces (JSF)
+.. Servlet
+. Click *Create* 
+. Make the following changes to `pom.xml`
+* Change the element value for both `maven.compiler.target` and `maven.compiler.source` to `*21*`.
+* Change the element value for `junit.version` to `*5.10.1*`.
+* *Add* the following dependencies to the `<dependencies>` element.
+    
+poml.xml
+[source, xml]
+----
+<!-- Eclipse Microprofile is for building Microservices -->
+<dependency>
+    <groupId>org.eclipse.microprofile</groupId>
+    <artifactId>microprofile</artifactId>
+    <version>6.1</version>
+    <type>pom</type>
+    <scope>provided</scope>
+</dependency>
+
+<!-- Project Lombok is for code generation -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.30</version>
+    <scope>provided</scope>
+</dependency>
+
+<!-- Additional tools to use with Jakarta Faces -->
+<dependency>
+    <groupId>org.primefaces</groupId>
+    <artifactId>primefaces</artifactId>
+    <version>13.0.5</version>
+    <classifier>jakarta</classifier>
+</dependency>
+<dependency>
+    <groupId>org.webjars.npm</groupId>
+    <artifactId>primeflex</artifactId>
+    <version>3.3.1</version>
+</dependency>
+<dependency>
+    <groupId>org.omnifaces</groupId>
+    <artifactId>omnifaces</artifactId>
+    <version>4.3</version>
+</dependency>
+
+<!-- DataFaker is for creating fake data using a provider -->
+<dependency>
+    <groupId>net.datafaker</groupId>
+    <artifactId>datafaker</artifactId>
+    <version>2.1.0</version>
+</dependency>
+----
+
+* Add the following dependencies to the `<plugins>` element.
+
+poml.xml
+[source, xml]
+----
+<!-- Plugin to build a bootable JAR for WildFly -->
+<plugin>
+    <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_dev_mode -->
+    <!-- mvn wildfly-jar:dev-watch -->
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>11.0.0.Beta1</version>
+    <configuration>
+        <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#31.0.0.Beta1</feature-pack-location>
+        <layers>
+            <!-- https://docs.wildfly.org/29/Bootable_Guide.html#wildfly_layers -->
+            <layer>cloud-server</layer>
+            <layer>jsf</layer>
+            <layer>microprofile-config</layer>
+            <layer>microprofile-rest-client</layer>
+            <layer>undertow-https</layer>
+        </layers>
+        <excluded-layers>
+            <layer>deployment-scanner</layer>
+        </excluded-layers>
+        <plugin-options>
+            <jboss-fork-embedded>true</jboss-fork-embedded>
+        </plugin-options>
+        <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_enabling_debug -->
+        <jvmArguments>
+            <!-- https://www.jetbrains.com/help/idea/attaching-to-local-process.html#attach-to-local -->
+            <!-- To attach a debugger to the running server from IntelliJ IDEA
+                1. From the main menu, choose `Run | Attach to Process`
+                2. IntelliJ IDEA will show the list of running local processes. Select the process with the `xxx-bootable.jar` name to attach to.
+            -->
+            <arg>-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</arg>
+        </jvmArguments>
+        <timeout>120</timeout>
+        <!-- Build a bootable JAR for cloud environment. -->
+        <cloud />
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+
+----
+
+[start=6]
+. Migrate your assignment 1 files to this project.
+
+== REQUIREMENTS
+. Sign to https://console.firebase.google.com/[Firebase Console] and add *Authentication* build to your project.
+. Edit the security *Rules* for the Realtime Database to restrict read and write access to allow only authenticated content owners access to their data.
+. Create and code the Faces web pages and its supporting Java classes to allow an anonymous user to login and for an authenticated user to logout.
+. Create/modify the Faces web page and its supporting Java classes to allow an authenticated user to create their own data.
+Add bean validation constraints for a minimum one of the data fields.
+. Create/modify the Faces web page and its supporting Java classes to allow an authenticated user to get all the data they created.
+. Create the Faces web page and its supporting Java classes to allow an anonymous user to register a new email and password user.
+An bean validation constraints to check for valid email address format 
+and password contains at minimum one lower case letter, one uppercase letter, one digits, and 12 or more characters.
+
+
+== CODING REQUIREMENTS
+* Do *NOT* reuse the instructor's demo project from this term or previous terms as your assigment project (*100%* deduction for re-submitting instructor work)
+* You *MUST* demo your assigment in person to your instructor
+
+== MARKING GUIDE
+
+[cols="4,1"]
+|===
+| Demonstration Requirement | Marks
+
+| Demonstrate successful Http Request to sign in with email/password using the Firebase Authentication REST API.
+This is due at the beginning of class on week 4 day 1.
+| 1
+
+| Demonstrate successful Http Request to create new data for a secured Firebase Realtime Database REST API endpoint.
+This is due at the beginning of class on week 4 day 1.
+| 1
+
+| Demonstrate successful Http Request to get only data created by the current authenticated user for a secured Firebase Realtime Database REST API endpoint.
+This is due at the beginning of class on week 4 day 1.
+| 1
+
+| Demonstrate successful Jakarta Faces page to sign in with email/password and to sign out.
+| 1
+
+| Demonstrate successful Jakarta Faces page for adding new data for the current authenticated user to the Firebase Realtime Database.
+Use the Firebase Console to verify data has been added to Firebase Realtime Database.
+| 2
+
+| Demonstrate successful Jakarta Faces page for getting all data for the current authenticated user in the Firebase Realtime Database.
+Use the Firebase Console to verify Faces web page content matches data in Firebase Realtime Database.
+| 2
+
+| Demonstrate successful Jakarta Faces page for creating a new Firebase Authentication user for the email/password provider.
+Use the Firebase Console to verify user have been added to Firebase Authentication.
+| 2
+
+|===
+
+
+== SUBMISSION/DEMONSTRATION REQUIREMENTS
+* Commit and push your project to your git repository before the due date.
+* Demonstrate in person the demonstration requirements on the first class after the due date.
+
+== Resources
+* https://firebase.google.com/docs/reference/rest/auth/#section-api-usage[Firebase Authentication REST API]
+* https://firebase.google.com/docs/rules/basics[Firebase Security Rules]
+* https://firebase.google.com/docs/database/rest/start[Firebase Realtime Database REST API]
+* https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html[IntelliJ IDEA HTTP Client]
+* https://www.jetbrains.com/help/idea/exploring-http-syntax.html[IntelliJ IDEA HTTP request syntax]
+* https://github.com/eclipse/microprofile-rest-client[Rest Client for MicroProfile GitHub]
+* https://download.eclipse.org/microprofile/microprofile-rest-client-3.0/microprofile-rest-client-spec-3.0.html[Rest Client for MicroProfile Specification]
