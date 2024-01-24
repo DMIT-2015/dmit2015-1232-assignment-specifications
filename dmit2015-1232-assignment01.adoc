@@ -191,7 +191,7 @@ Add a button to clear all form fields.
 
 . Create and code a Faces web page and its supporting Java classes to allow the user to view data from your Firebase Realtime Database.
 You can use the file template *DMIT2015 Firebase REST API Faces CRUD List View* to create the Faces backing bean class.
-You can use the file template *DMIT2015 Faces Document CRUD List Page* to create the Faces web page.
+You can use the file template *DMIT2015 Firebase REST API Faces CRUD List Page* to create the Faces web page.
 
 . Create and code a Faces web page and its supporting Java classes to convert the following Microsoft Blazor WebApp Weather Razor Component that
 shows a table with 5 random generated data for weather forecast. 
