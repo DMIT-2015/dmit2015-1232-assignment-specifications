@@ -109,7 +109,7 @@ poml.xml
     <artifactId>wildfly-jar-maven-plugin</artifactId>
     <version>11.0.0.Beta1</version>
     <configuration>
-        <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#31.0.0.Beta1</feature-pack-location>
+        <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#31.0.0.Final</feature-pack-location>
         <layers>
             <!-- https://docs.wildfly.org/29/Bootable_Guide.html#wildfly_layers -->
             <layer>cloud-server</layer>
