@@ -149,11 +149,14 @@ poml.xml
 ----
 
 [start=6]
-. Migrate your assignment 1 files to this project.
+. Migrate (copy) any assignment 1 files to this project that you want to re-use.
 
 == REQUIREMENTS
-. Sign to https://console.firebase.google.com/[Firebase Console] and add *Authentication* build to your project.
+. Sign to https://console.firebase.google.com/[Firebase Console] and add *Authentication* build to your project with *Email/Password* for the sign-in method. 
+Add two new user using the Firebase Console or using the Firebase Authentication REST API endpoint to https://firebase.google.com/docs/reference/rest/auth/#section-create-email-password[sign up with email / password].
+. Manually test the Firebase Auth REST API endpoint to https://firebase.google.com/docs/reference/rest/auth/#section-sign-in-email-password[sign in with email / password] using an Http Client of your choice (IntelliJ IDEA HTTP Client, curl command, Swagger-UI, Postman, or SoapUI).
 . Edit the security *Rules* for the Realtime Database to restrict read and write access to allow only authenticated content owners access to their data.
+. Manually test the secured Firebase Realtime Databse REST API endpoint to https://firebase.google.com/docs/database/rest/save-data#section-post[Save lists of data] using an Http Client of your choice (IntelliJ IDEA HTTP Client, curl command, Swagger-Ui, Postman, or SoapUI). You will need to pass into the HTTP post request the *Firebase Auth ID token* and the *uid* for an authenticated user. 
 . Create and code the Faces web pages and its supporting Java classes to allow an anonymous user to login and for an authenticated user to logout.
 . Create/modify the Faces web page and its supporting Java classes to allow an authenticated user to create their own data.
 Add bean validation constraints for a minimum one of the data fields.
@@ -174,15 +177,15 @@ and password contains at minimum one lower case letter, one uppercase letter, on
 | Demonstration Requirement | Marks
 
 | Demonstrate successful Http Request to sign in with email/password using the Firebase Authentication REST API.
-This is due at the beginning of class on week 4 day 1.
+This is due at the end of class on week 4 day 1.
 | 1
 
 | Demonstrate successful Http Request to create new data for a secured Firebase Realtime Database REST API endpoint.
-This is due at the beginning of class on week 4 day 1.
+This is due at the end of class on week 4 day 1.
 | 1
 
 | Demonstrate successful Http Request to get only data created by the current authenticated user for a secured Firebase Realtime Database REST API endpoint.
-This is due at the beginning of class on week 4 day 1.
+This is due at the end of class on week 4 day 1.
 | 1
 
 | Demonstrate successful Jakarta Faces page to sign in with email/password and to sign out.
@@ -198,6 +201,7 @@ Use the Firebase Console to verify Faces web page content matches data in Fireba
 
 | Demonstrate successful Jakarta Faces page for creating a new Firebase Authentication user for the email/password provider.
 Use the Firebase Console to verify user have been added to Firebase Authentication.
+Demonstrate bean validation messages for email and password.
 | 2
 
 |===
