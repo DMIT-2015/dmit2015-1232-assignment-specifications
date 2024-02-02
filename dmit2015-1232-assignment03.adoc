@@ -100,10 +100,6 @@ The Astrological sign of a person can be determine by looking up the following t
 
 |===
 
-[start=2]
-. Create a web page that can be used to determine both the Federal and Alberta Provincial personal income tax for *2023*. You do not need to handle any years besides 2023 and the only provincial you need to implement. In the next assignment you will add support to handle multiple years and all provinces in Canada. 
-The 2023 Canadian personal tax tables are posted on Moodle. 
-
 == GIT REPOSITORY SETUP
 . Login to Moodle and navigate to the link to create a private github repository for this assignment.
 . Click on *Accept this assignment* to allow github to create a private github repository for you.
@@ -424,15 +420,7 @@ class PersonTest {
 }
 
 ----
-
 [start=4]
-. In the `src/main/webapp` folder, create a new `DMIT2015 Faces Composition` file named `person.xhtml`.
-. Create and code a Faces web page named `personCalculator.xhtml` and its supporting Java classes that allows the user to on the web page enter the *first name*, *last name*, *birth date*, and *age on date*. Have buttons that allows to user to view the current age, the age on a specific date, the Chinese zodiac, and Astrological sign.
-
-. Create and code a Faces web page named `personalIncomeTaxCalculator.xhtml` and its supporting Java classes that allows the user to on the web page select the *tax year*, select the *province*, and enter the *taxable income*. Have buttons that allows to user to view the federal income tax, the provincial income tax, and the total income tax.
-    
-. Modify `src/main/webapp/WEB-INF/faces-templates/layout.xhtml` and add links to the web pages to *Person Calculator*, and *Income Tax Calculator*.
-
 . In the Java package `dmit2015.model`, create a new Java class named `CanadianPersonalIncomeTax` then write the code to implement the UML class diagram shown below. 
 
     -------------------------------------------------------------
@@ -484,7 +472,7 @@ class PersonTest {
 
 |===
 
-[start=9]
+[start=5]
 . Create a JUnit Test Class for the `CanadianPersonalIncomeTax` class and write the code to implement the following test data supplied below. You can set the difference allowed between expected and actual value to `0.50`.
 
 FederalIncomeTax_TestData.csv
@@ -517,9 +505,15 @@ Bracket 4 Boundary,341502.00,40980.25
 Bracket 5,512253.00,66592.90
 ----
 
-[start=10]
+[start=6]
 . Create a JUnit Test Suite to run `PersonTest` and `CanadianPersonalIncomeTaxTest`.
 Run the test suite and take a screenshot of the JUnit Test results and save the image to the root of your project folder named `TestSuiteResults.png`. 
+
+. Create and code a Faces web page named `personCalculator.xhtml` and its supporting Java classes that allows the user to on the web page enter the *first name*, *last name*, *birth date*, and *age on date*. Have buttons that allows to user to view the current age, the age on a specific date, the Chinese zodiac, and Astrological sign.
+
+. Create and code a Faces web page named `personalIncomeTaxCalculator.xhtml` and its supporting Java classes that allows the user to on the web page select the *tax year*, select the *province*, and enter the *taxable income*. Have buttons that allows to user to view the federal income tax, the provincial income tax, and the total income tax.
+    
+. Modify `src/main/webapp/WEB-INF/faces-templates/layout.xhtml` and add links to the web pages to *Person Calculator*, and *Income Tax Calculator*.
 
 . Deploy your assignment project to your OpenShift Developer Sandbox.
 
