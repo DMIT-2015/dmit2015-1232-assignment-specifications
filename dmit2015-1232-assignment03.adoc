@@ -1,0 +1,580 @@
+= DMIT2015 Assignment 3 - JavaBean, Unit Testing, and OpenShift Developer Sandbox
+:source-highlighter: rouge
+:max-width: 90%
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+- Create a Java class following JavaBean specifications
+- Write and run a JUnit Test Case class to validate a JavaBean's methods
+- Deploy a Wildfly applications to OpenShift Developer Sandbox
+
+== PROBLEM DESCRIPTION
+You are the Computer Software Developer co-op intern at an accounting firm where as a proof of concept you have been given the following task to create a new Jakarta EE 10 web application that be be used to perform the following tasks:
+
+. Create a web page that can be used to determine a person's current age, the age on a specific date, their Chinese Zodiac animal, and their Astrological sign using inputs for the user's first name, last name, and birth date. The Chinese Zodic animal of a person can be determine by looking up the following table.
+
+.Chinese Zodiac 
+|===
+|birthYear % 12|Animal
+
+|0
+|Monkey
+
+|1
+|Rooster
+
+|2
+|Dog
+
+|3
+|Pig
+
+|4
+|Rat
+
+|5
+|Ox
+
+|6
+|Tiger
+
+|7
+|Rabbit
+
+|8
+|Dragon
+
+|9
+|Snake
+
+|10
+|Horse
+
+|11
+|Sheep
+
+|===
+
+The Astrological sign of a person can be determine by looking up the following table.
+
+.Astrological Sign
+|===
+|Birth Dates|Sign
+
+|March 21 - April 19
+|Aries
+
+|April 20 - May 20
+|Taurus
+
+|May 21 - June 21
+|Gemini
+
+|June 22 - July 22 
+|Cancer
+
+|July 23 - August 22
+|Leo
+
+|August 23 - September 22 
+|Virgo
+
+|September 23 - October 22
+|Libra
+
+|October 23 - November 22
+|Scorpio
+
+|November 23 - December 21 
+|Sagittarius
+
+|December 22 - January 19
+|Capricorn
+
+|January 20 - February 18
+|Aquarius
+
+|February 19 - March 20 
+|Pisces
+
+|===
+
+[start=2]
+. Create a web page that can be used to determine both the Federal and Alberta Provincial personal income tax for *2023*. You do not need to handle any years besides 2023 and the only provincial you need to implement. In the next assignment you will add support to handle multiple years and all provinces in Canada. 
+The 2023 Canadian personal tax tables are posted on Moodle. 
+
+== GIT REPOSITORY SETUP
+. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Click on *Accept this assignment* to allow github to create a private github repository for you.
+. Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
+. Click on *Clone or download* button then copy the URL to your repository to the clipboard.
+. You can now clone the git repository to the *~/IdeaProjects/dmit2015-1232-assignment03* folder from IntelliJ IDEA.
+
+== PROJECT SETUP
+. Open IntelliJ IDEA and create a new project using the *Jakarta EE* module and change following settings:
+ .. Name: `dmit2015-assignment03-yourname`
+ .. Location: `~/IdeaProjects/dmit2015-1232-assignment03`
+ .. Template: `Web application`
+ .. Application server: `<No appliation server>`  
+ .. Group: `dmit2015`
+ .. Artifact: `assignment03-yourname`
+. Click *Next*
+. Change the Version select menu to *Jakarta EE 10* and select the following specifications:
+ .. Web Profile (10.0.0)
+  Click *Create*
+
+. Make the following changes to `pom.xml`
+* Change the element value for both `maven.compiler.target` and `maven.compiler.source` to `*21*`.
+* Change the element value for `junit.version` to `*5.10.1*`.
+
+poml.xml
+[source, xml]
+----
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.30</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-math3</artifactId>
+    <version>3.6.1</version>
+</dependency>
+
+<!-- Additional tools to use with Jakarta Faces -->
+<dependency>
+    <groupId>org.primefaces</groupId>
+    <artifactId>primefaces</artifactId>
+    <version>13.0.5</version>
+    <classifier>jakarta</classifier>
+</dependency>
+<dependency>
+    <groupId>org.webjars.npm</groupId>
+    <artifactId>primeflex</artifactId>
+    <version>3.3.1</version>
+</dependency>
+<dependency>
+    <groupId>org.omnifaces</groupId>
+    <artifactId>omnifaces</artifactId>
+    <version>4.3</version>
+</dependency>
+
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-params</artifactId>
+    <version>${junit.version}</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.junit.platform</groupId>
+    <artifactId>junit-platform-suite-engine</artifactId>
+    <version>1.10.1</version>
+    <scope>test</scope>
+</dependency>
+<!-- AssertJ is for writing test using fluent assertions -->
+<dependency>
+    <groupId>org.assertj</groupId>
+    <artifactId>assertj-core</artifactId>
+    <version>3.25.2</version>
+    <scope>test</scope>
+</dependency>
+
+----
+
+* Add the following dependencies to the `<plugins>` element.
+
+poml.xml
+[source, xml]
+----
+<!-- Plugin to build a bootable JAR for WildFly -->
+<plugin>
+    <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_dev_mode -->
+    <!-- mvn wildfly-jar:dev-watch -->
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>11.0.0.Beta1</version>
+    <configuration>
+        <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#31.0.0.Final</feature-pack-location>
+        <layers>
+            <!-- https://docs.wildfly.org/31/Bootable_Guide.html#wildfly_layers -->
+            <layer>cloud-server</layer> <!-- includes ee-security -->
+            <layer>jsf</layer>
+        </layers>
+        <excluded-layers>
+            <layer>deployment-scanner</layer>
+        </excluded-layers>
+        <plugin-options>
+            <jboss-fork-embedded>true</jboss-fork-embedded>
+        </plugin-options>
+        <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_enabling_debug -->
+        <jvmArguments>
+            <!-- https://www.jetbrains.com/help/idea/attaching-to-local-process.html#attach-to-local -->
+            <!-- To attach a debugger to the running server from IntelliJ IDEA
+                1. From the main menu, choose `Run | Attach to Process`
+                2. IntelliJ IDEA will show the list of running local processes. Select the process with the `xxx-bootable.jar` name to attach to.
+            -->
+            <arg>-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</arg>
+        </jvmArguments>
+        <!-- Build a bootable JAR for cloud environment. -->
+        <cloud />
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+
+<!-- Plugin to run unit tests-->
+<!-- mvn test -->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.2.5</version>
+</plugin>
+
+----
+
+== REQUIREMENTS
+. Open IntelliJ IDEA and create a new Java packaged named `dmit2015.model`.
+. In the Java package `dmit2015.model`, create a new Java class named `Person` then write the code to implement the UML class diagram shown below. 
+
+    -------------------------------------------------------------
+    | Person                                                    |
+    |-----------------------------------------------------------|
+    | firstname: String                                    		|
+    | lastname: String                                    		|
+    | birthDate: java.time.LocalDate                            |
+    | birthDateString: String                                   |   
+    |-----------------------------------------------------------|
+    | Person() :                                                |
+    | Person(firstname: String,                                 |
+    |        lastname: String,                                  |
+    |        birthDate: java.time.LocalDate) :                  |
+    | currentAge() : int                                        |
+    | ageOn(onDate: java.time.LocalDate) : int                  | 
+    | chineseZodiac() : String                                  |
+    | astrologicalSign() : String                               |
+    -------------------------------------------------------------
+
+.Person Property Descriptions
+[cols="1,4"]
+|===
+|Property|Description
+
+|firstname
+|The first name of this person.
+
+|lastname
+|The last name of this person.
+
+|birthDate
+|The date of birth of this person.
+
+|birthDateString
+|The date of birth of this person as a string value using the date pattern `yyyy-mm-dd`. The setter (mutator) for this field will also set the `birthDate` field value. You can parse a date from String type to LocalDate using the static class-level `parse` method such `birthDate = LocalDate.parse(birthDateString);`
+
+|===
+
+.Person Method Descriptions
+[cols="1,4"]
+|===
+|Method|Description
+
+|Person()
+|Set the default the `firstname` field to "DMIT2015", `lastname` field to "Student", `birthDate` to the current date. You can get the current date by calling the `LocalDate.now()` static class-level method to return the current date.
+
+|Person(firstname,lastname,birthDate)
+|Set the `firstname`, `lastname`, and `birthDate` fields using the corresponding method parameters.
+
+|currentAge
+|Returns the current age of the person as of the current date. 
+(Hint 1: The https://cr.openjdk.java.net/~iris/se/17/latestSpec/api/java.base/java/time/LocalDate.html[LocalDate] has static class methods to obtain the current date and to obtain an instance of LocalDate from a text string)
+(Hint 2: you can use the https://cr.openjdk.java.net/~iris/se/17/latestSpec/api/java.base/java/time/temporal/ChronoUnit.html#between(java.time.temporal.Temporal,java.time.temporal.Temporal)[between method of the ChronoUnit enum class] Java class to calcualte the difference between two temporal objects)
+
+|ageOn
+|Returns the current age of the person as of the `onDate`. 
+
+|chineseZodiac
+|Returns the Chinese Zodiac animal of the person as described in table 1. 
+
+|astrologicalSign
+|Returns the Astrological Sign of the person as described in table 2. 
+
+|===
+
+[start=3]
+. Navigate to the `src/test/java` folder of your project and create a new Java pacakged named `dmit2015.model`. Paste to the `dmit2015.model` the following code to create the `PersonTest` test class. Run PersonTest to check if your `Person` class is coded correctly. If a test case fails, fix the code in your Person class then re-run the test.
+
+PersonTest.java
+[source, java]
+----
+package dmit2015.model;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class PersonTest {
+    
+    @ParameterizedTest(name = "[{index}] {arguments}") // shown is the default name attribute value
+    @CsvSource(useHeadersInDisplayName = true, textBlock = """
+         FIRST_NAME,    LAST_NAME,          BIRTHDATE,      EXPECTED_AGE
+         Queen,         Elizabeth II,       1926-04-21,     97
+         King,          Charles III,        1948-11-14,     75
+         Prince,        William of Wales,    1982-06-21,     41
+         Prince,        George of Wales,    2013-07-22,     10
+         Uncle,         Bob,                1952-12-05,     71
+        """)
+    void currentAge_knownAge_returnsAge(
+            String firstName,
+            String lastName,
+            LocalDate birthDate,
+            int expectedAge
+    ) {
+        var currentPerson = new Person(firstName, lastName, birthDate);
+        assertEquals(expectedAge, currentPerson.currentAge());
+    }
+
+    @ParameterizedTest
+    @CsvSource(useHeadersInDisplayName = true, textBlock = """
+         FIRST_NAME,    LAST_NAME,          BIRTHDATE,      ON_DATE,    EXPECTED_AGE
+         Queen,         Elizabeth II,       1926-04-21,     2022-09-08, 96
+         King,          Charles III,        1948-11-14,     2024-02-07, 75
+         Uncle,         Bob,                1952-12-05,     2024-02-07, 71
+        """)
+    void ageOn_futureDate_returnsAge(
+            String firstName,
+            String lastName,
+            LocalDate birthDate,
+            LocalDate onDate,
+            long expectedAge
+    ) {
+        var currentPerson = new Person(firstName, lastName, birthDate);
+        assertEquals(expectedAge, currentPerson.ageOn(onDate));
+    }
+
+    @ParameterizedTest
+    @CsvSource(useHeadersInDisplayName = true, textBlock = """
+        BIRTH_DATE,     EXPECTED_ANIMAL
+        1900-01-01,     Rat
+        1901-02-01,     Ox
+        1902-03-01,     Tiger
+        1903-04-01,     Rabbit
+        1904-05-01,     Dragon
+        1905-06-01,     Snake
+        1906-07-01,     Horse
+        1907-08-01,     Sheep
+        1908-09-01,     Monkey
+        1909-10-01,     Rooster
+        1910-11-01,     Dog
+        1911-12-01,     Pig
+        """)
+    void chineseZodiac_yearsForAllAnimals_correctAnimal(
+            LocalDate birthDate,
+            String expectedChineseZodiac
+    ) {
+        var currentPerson = new Person("Chinese","Zodiac", birthDate);
+        assertEquals(expectedChineseZodiac.toUpperCase(), currentPerson.chineseZodiac().toUpperCase());
+    }
+
+    @ParameterizedTest
+    @CsvSource(useHeadersInDisplayName = true, textBlock = """   
+        BIRTH_DATE,     EXPECTED_SIGN         
+        2000-03-21,     Aries
+        2000-04-19,     Aries
+        2000-04-20,     Taurus
+        2000-05-20,     Taurus
+        2000-05-21,     Gemini
+        2000-06-21,     Gemini
+        2000-06-22,     Cancer
+        2000-07-22,     Cancer
+        2000-07-23,     Leo
+        2000-08-22,     Leo
+        2000-08-23,     Virgo
+        2000-09-22,     Virgo
+        2000-09-23,     Libra
+        2000-10-22,     Libra
+        2000-10-23,     Scorpio
+        2000-11-22,     Scorpio
+        2000-11-23,     Sagittarius
+        2000-12-21,     Sagittarius
+        2000-12-22,     Capricorn
+        2000-01-19,     Capricorn
+        2000-01-20,     Aquarius
+        2000-02-18,     Aquarius
+        2000-02-19,     Pisces
+        2000-03-20,     Pisces
+        """)
+    void astrologicalSign_allSignDateRanges_correctSign(
+            LocalDate birthDate,
+            String expectedAstrologicalSign
+    ) {
+        var currentPerson = new Person("Astrological","Sign", birthDate);
+        assertEquals(expectedAstrologicalSign.toUpperCase(), currentPerson.astrologicalSign().toUpperCase());
+    }
+
+}
+
+----
+
+[start=4]
+. In the `src/main/webapp` folder, create a new `DMIT2015 Faces Composition` file named `person.xhtml`.
+. Create and code a Faces web page named `personCalculator.xhtml` and its supporting Java classes that allows the user to on the web page enter the *first name*, *last name*, *birth date*, and *age on date*. Have buttons that allows to user to view the current age, the age on a specific date, the Chinese zodiac, and Astrological sign.
+
+. Create and code a Faces web page named `personalIncomeTaxCalculator.xhtml` and its supporting Java classes that allows the user to on the web page select the *tax year*, select the *province*, and enter the *taxable income*. Have buttons that allows to user to view the federal income tax, the provincial income tax, and the total income tax.
+    
+. Modify `src/main/webapp/WEB-INF/faces-templates/layout.xhtml` and add links to the web pages to *Person Calculator*, and *Income Tax Calculator*.
+
+. In the Java package `dmit2015.model`, create a new Java class named `CanadianPersonalIncomeTax` then write the code to implement the UML class diagram shown below. 
+
+    -------------------------------------------------------------
+    | CanadianPersonalIncomeTax                                 |
+    |-----------------------------------------------------------|
+    | taxYear: int = 2023                                   	|
+    | taxableIncome: double = 50000                             |
+    | province: String = "AB"                                   |
+    |-----------------------------------------------------------|
+    | CanadianPersonalIncomeTax() :                             |
+    | CanadianPersonalIncomeTax(                                |
+    |    taxYear: int,		                                    |
+    |    taxableIncome: double,                                 |
+    |    province: String ) :                                   |
+    | federalIncomeTax() : double                               |
+    | provincialIncomeTax() : double                            |  
+    | totalIncomeTax() : double 	                            |
+    -------------------------------------------------------------
+    
+.CanadianPersonalIncomeTax Data Description
+[cols="1,4"]
+|===
+|Data|Description
+
+|taxYear
+|The income tax year
+
+|taxableIncome
+|The amount of income that is taxable
+
+|province
+|The two letter abbreviation of the province according to Canada Post standards
+
+|===
+
+.CanadianPersonalIncomeTax Method Descriptions
+[cols="1,4"]
+|===
+|Method|Description
+
+|federalIncomeTax
+|Returns the calculated Federal Income Tax for only year *2023*. In the next assignment you will expand this method to support more years.
+
+|provincialIncomeTax
+|Returns the calculated Province Income Tax Amount for only the *Alberta* province. In next assignment you will expand this method to support all provinces.
+
+|totalTaxAmount
+|Returns the sum of the Federal Income Tax and Provincial Income Tax.
+
+|===
+
+[start=9]
+. Create a JUnit Test Class for the `CanadianPersonalIncomeTax` class and write the code to implement the following test data supplied below. You can set the difference allowed between expected and actual value to `0.50`.
+
+FederalIncomeTax_TestData.csv
+[source, text]
+----
+Test Case,Taxable Income,Federal Tax Amount
+Bracket 1,26679.50,4001.93
+Bracket 1 Boundary,53359.00,8003.85
+Bracket 2,80038.00,13473.05
+Bracket 2 Boundary,106717.00,18942.24
+Bracket 3,136073.50,26574.93
+Bracket 3 Boundary,165430.00,34207.62
+Bracket 4,200552.50,44393.15
+Bracket 4 Boundary,235675.00,54578.67
+Bracket 5,471350.00,132351.42
+----
+
+ProvincialIncomeTax_TestData.csv
+[source, text]
+----
+Test Case,Taxable Income,AB Provincial Income Tax Amount
+Bracket 1,71146.00,7114.60
+Bracket 1 Boundary,142292.00,14229.20
+Bracket 2,156521.50,15936.74
+Bracket 2 Boundary,170751.00,17644.28
+Bracket 3,199209.50,21343.89
+Bracket 3 Boundary,227668.00,25043.49
+Bracket 4,284585.00,33011.87
+Bracket 4 Boundary,341502.00,40980.25
+Bracket 5,512253.00,66592.90
+----
+
+[start=10]
+. Create a JUnit Test Suite to run `PersonTest` and `CanadianPersonalIncomeTaxTest`.
+Run the test suite and take a screenshot of the JUnit Test results and save the image to the root of your project folder named `TestSuiteResults.png`. 
+
+. Deploy your assignment project to your OpenShift Developer Sandbox.
+
+== CODING REQUIREMENTS
+* Java package names must be all lower case (*10%* deduction if you do not follow this requirement)
+* Use camelCase for Java variables and method names (*10%* deduction if you do not follow this requirement)
+* Use TitleCase for Java class names (*10%* deduction if you do not follow this requirement)
+* All Java source files must include javadoc comments before the class with a description of the class, `@author` with your full name, and `@version` with the last date modifed. (*10%* deduction if you do not follow this requirement)
+* You must modify the `README.md` in the root of your github repository to include your full name and your Github username. (*10%* deduction if you do not follow this requirement)
+
+== MARKING GUIDE
+
+[cols="1,4"]
+|===
+|Mark|Requirement
+
+| 1
+| Person.java - currentAge() test case passed
+
+| 1
+| Person.java - ageOn() test case passed
+
+| 1
+| Person.java - chineseZodiac() test case passed
+
+| 1
+| Person.java - astrologicalSign() test case passed
+
+| 2
+| person.xhtml - demonstrated to instructor that it meets requirements.
+
+| 1
+| CanadianPersonalIncomeTax.java and CanadianPersonalIncomeTaxTest.java - federalIncomeTax() test method coded using the supplied test data and all test cases pass
+
+| 1
+| CanadianPersonalIncomeTax.java and CanadianPersonalIncomeTaxTest.java - provincialIncomeTax() test method code using the suppplied test data and all test cases pass
+
+| 2
+| incomeTax.xhtml - demonstrated to instructor that it meets requirements
+
+| 1
+| JUnit Test Suite - coded and runs `PersonTest.java` and `CanadianPersonalIncomeTaxTest.java`
+
+| 4
+| Assignment project is deployed to OpenShift and all pages are functional.
+
+
+|===
+
+
+== SUBMISSION REQUIREMENTS
+* Commit and push your project to your git repository before the due date.
+* Demonstrate in person during schedule class the demonstration requirements on or before the first class after the due date.
+
+== Resources
+* https://docs.oracle.com/javase/tutorial/javabeans/index.html[JavaBeans]
+* https://junit.org/junit5/docs/current/user-guide/[JUnit 5 User Guide]
+* https://assertj.github.io/doc/#assertj-core-assertions-guide[AssertJ Core Assertions Guide]
