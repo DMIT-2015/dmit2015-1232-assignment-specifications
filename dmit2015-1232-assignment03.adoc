@@ -462,14 +462,36 @@ class PersonTest {
 |Method|Description
 
 |federalIncomeTax
-|Returns the calculated Federal Income Tax for only year *2023*. In the next assignment you will expand this method to support more years.
+|Returns the calculated Federal Income Tax for only year *2023*. In the next assignment you will expand this method to support more years. Information on how to calculate the federal income tax is available on the https://www.canada.ca/en/revenue-agency/services/tax/individuals/frequently-asked-questions-individuals/canadian-income-tax-rates-individuals-current-previous-years.html#toc2[Canada Revenue Agency website].
 
 |provincialIncomeTax
-|Returns the calculated Province Income Tax Amount for only the *Alberta* province. In next assignment you will expand this method to support all provinces.
+|Returns the calculated Province Income Tax Amount for only the *Alberta* province. In next assignment you will expand this method to support all provinces. Information on how to calculate the provincial income tax is available on the https://www.canada.ca/en/revenue-agency/services/tax/individuals/frequently-asked-questions-individuals/canadian-income-tax-rates-individuals-current-previous-years.html#toc2[Canada Revenue Agency website].
 
 |totalTaxAmount
 |Returns the sum of the Federal Income Tax and Provincial Income Tax.
 
+|===
+
+.Federal income tax rates for 2023
+[cols="1,4"]
+|===
+|Tax rate|	Taxable income threshold
+|15%	|on the portion of taxable income that is $53,359 or less, plus
+|20.5%	|on the portion of taxable income over $53,359 up to $106,717, plus
+|26%	|on the portion of taxable income over $106,717 up to $165,430, plus
+|29%	|on the portion of taxable income over $165,430 up to $235,675, plus
+|33%	|on the portion of taxable income over $235,675
+|===
+
+.Alberta income tax rates for 2023
+[cols="1,4"]
+|===
+|Tax rate|	Taxable income threshold
+|10%|   on the portion of taxable income that is $142,292 or less, plus
+|12%|	on the portion of taxable income over $142,292 up to $170,751, plus
+|13%|	on the portion of taxable income over $170,751 up to $227,668, plus
+|14%|	on the portion of taxable income over $227,668 up to $341,502, plus
+|15%|	on the portion of taxable income over $341,502
 |===
 
 [start=5]
@@ -558,7 +580,7 @@ Run the test suite and take a screenshot of the JUnit Test results and save the 
 | JUnit Test Suite - coded and runs `PersonTest.java` and `CanadianPersonalIncomeTaxTest.java`
 
 | 4
-| Assignment project is deployed to OpenShift and all pages are functional.
+| Assignment project is deployed to OpenShift Developer Sandbox and all pages are functional.
 
 
 |===
