@@ -245,7 +245,6 @@ poml.xml
     | firstname: String                                    		|
     | lastname: String                                    		|
     | birthDate: java.time.LocalDate                            |
-    | birthDateString: String                                   |   
     |-----------------------------------------------------------|
     | Person() :                                                |
     | Person(firstname: String,                                 |
@@ -270,9 +269,6 @@ poml.xml
 
 |birthDate
 |The date of birth of this person.
-
-|birthDateString
-|The date of birth of this person as a string value using the date pattern `yyyy-mm-dd`. The setter (mutator) for this field will also set the `birthDate` field value. You can parse a date from String type to LocalDate using the static class-level `parse` method such `birthDate = LocalDate.parse(birthDateString);`
 
 |===
 
