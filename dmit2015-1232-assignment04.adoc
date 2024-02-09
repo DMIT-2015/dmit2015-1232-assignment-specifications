@@ -1,0 +1,494 @@
+= DMIT2015 Assignment 4 - Jakarta Persistence (Database First) and Functional UI Testing
+:source-highlighter: rouge
+:max-width: 90%
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+- Configure the Jakarta Persistence environment to connect to an Oracle Database
+- Generate Jakarta Persistence entity classes for a database schema
+- Create Jakarta Faces web pages that access a Jakarta Persistence repository to perform CRUD operations on two related entities.
+- Write a Functional UI Test for Jakarta Faces (JSF) using Selenium WebDriver.
+- Build a web page that can export search results in EXCEL, PDF, or XML using the PrimeFaces DataExporter component
+
+== PROBLEM DESCRIPTION
+You are the Junior Software Developer for an organization where you have been assigned the task to create an intranet Java web application 
+for the Human Resources department to manage its dataset for Regions, Countries, Locations, Departments, Employees, and Jobs for the Oracle *HR* sample database schema.
+The https://docs.oracle.com/en/database/oracle/oracle-database/23/comsc/schema-diagrams.html[*HR* Schema Diagram] describes the relationships between the tables.
+The https://docs.oracle.com/en/database/oracle/oracle-database/23/comsc/HR-sample-schema-table-descriptions.html[*HR* Schema Table Descriptions] describes
+the columns of each table. 
+The senior software developer will be reponsible for completing the functionality to manage the dataset on Regions and Countries. 
+Your task is to complete the functionality to manage data on two of the four remaining dataset (Locations, Departments, Employees, Jobs).
+
+This is a group assignment with a maximum of 4 members per team.
+Each team member will work on a different dataset (Locations, Departments, Employees, Jobs).
+Review the video https://youtu.be/QxrA3taZdNM?si=5hThOzwro_CKWuPf&t=60[GitHub Classroom: Create group assignment] on how to create a team and how to join a team.
+
+== Oracle Database 23c Free Version Docker Container
+The VM contains a Docker container for Oracle Database 23c Free Version.
+To use the Oracle Database you must be manually started each time you login by opening a Terminal window and typing the command `docker start dmit2015-oracle-free`. You can use teh command `docker logs dmit2015-oracle-free` to check the log files from the docker container.
+
+In the HR schema the primary key column for the Departments, Employees, and Locations are assigned using the sequence name shown in the table below.
+
+|===
+|Table|Sequence Name
+
+| DEPARTMENTS 
+| DEPARTMENT_SEQ
+
+| EMPLOYEES
+| EMPLOYEES_SEQ
+
+| LOCATIONS 
+| LOCATIONS_SEQ
+
+|===
+
+
+The code snippet shown below shows to how to generate a primary key value using a sequence for the Department entity
+
+[source, java]
+----
+Short nextSequenceValue = (Short) _entityManager
+        .createNativeQuery("SELECT DEPARTMENTS_SEQ.nextval from dual", Short.class)
+        .getSingleResult();
+newDepartment.setDepartmentId(nextSequenceValue);
+
+_entityManager().persist(newDepartment);
+
+----
+
+If there are no sequence for an entity, you can use the highest current primary key value and add an increment value to it as shown in code snippet below for the Region entity.
+
+[source, java]
+----
+BigInteger nextId = _entityManager
+                .createQuery("SELECT MAX(r.regionId) + 10 FROM Region r", BigInteger.class)
+                .getSingleResult();
+newRegion.setRegionId(nextId);
+
+_entityManager.persist(newRegion);
+
+----
+
+[source, java]
+----
+Integer nextId = _entityManager
+            .createQuery("SELECT MAX(l.locationId) + 100 FROM Location l", Integer.class)
+            .getSingleResult();
+newLocation.setLocationId(nextId.shortValue());
+_entityManager.persist(newLocation);
+
+----
+
+Alternatively, you could, if you have permission, create a new SEQUENCE in the Oracle Database as shown in the code snippet below for the REGIONS table.
+[source, sql]
+----
+CREATE SEQUENCE REGIONS_SEQ INCREMENT BY 10 START WITH 10 NOCACHE;
+----
+
+=== Setting up a Oracle Database 23c docker container on a Windows host machine
+To install Oracle Database 23c on a Windows host machine:
+
+* Install https://docs.docker.com/desktop/install/windows-install/[Docker Desktop on Windows]
+* Create a directory on your c: drive named *C:\jdk\Oracle*
+* Copy from the VM in the Downloads folder the files https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-23.4.0.023.2321.zip[sqlcl-23.4.0.023.2321.zip] and https://www.oracle.com/database/sqldeveloper/technologies/download/#license-lightbox[sqldeveloper-23.1.1.345.2114-no-jre.zip]
+* Unzip both files to C:\jdk\Oracle folder
+* Open a Windows Terminal and type in the following commands one at a time
+
+[source, console]
+----
+docker pull container-registry.oracle.com/database/free
+
+docker run -d --name dmit2015-oracle-free -p 1521:1521 -e ORACLE_PWD=Password2015 container-registry.oracle.com/database/free
+
+C:\jdk\Oracle\sqlcl\bin\sql.exe sys/Password2015@localhost:1521/FREEPDB1 as sysdba
+
+  CREATE USER user2015 IDENTIFIED BY Password2015;
+
+  GRANT CONNECT, RESOURCE, DBA TO user2015;
+
+  GRANT CREATE SESSION TO user2015;
+
+  GRANT GRANT ANY PRIVILEGE TO user2015;
+
+  quit
+
+cd C:\jdk\Oracle
+
+git clone https://github.com/oracle/db-sample-schemas.git
+
+cd C:\jdk\Oracle\db-sample-schemas
+
+C:\jdk\Oracle\sqlcl\bin\sql.exe user2015/Password2015@localhost:1521/FREEPDB1
+
+@human_resources/hr_install.sql
+
+quit
+
+C:\jdk\Oracle\sqlcl\bin\sql.exe user2015/Password2015@localhost:1521/FREEPDB1
+
+@customer_orders/co_install.sql
+
+quit
+
+----
+
+== GIT REPOSITORY SETUP
+. The team lead member will create a new team on the GitHub group assignment.
+. The other team members will join the existing team on the GitHub group assignment.
+. The team lead member will clone the git repository to the *~/IdeaProjects/dmit2015-1232-assignment04* folder from IntelliJ IDEA.
+
+== PROJECT SETUP
+. The team lead will create the project.
+. Open IntelliJ IDEA and create a new project using the *Jakarta EE* module and change following settings:
+ .. Name: `dmit2015-assignment04-yourTeamName`
+ .. Location: `~/IdeaProjects/dmit2015-1232-assignment04`
+ .. Template: `Web application`
+ .. Application server: `<No appliation server>`  
+ .. Group: `dmit2015`
+ .. Artifact: `assignment04-yourTeamName`
+. Click *Next*
+. Change the Version select menu to *Jakarta EE 10* and select the following specifications:
+ .. Web Profile (10.0.0)
+  Click *Create*
+
+. Make the following changes to `pom.xml`
+* Change the element value for both `maven.compiler.target` and `maven.compiler.source` to `*21*`.
+* Change the element value for `junit.version` to `*5.10.2*`.
+
+poml.xml
+[source, xml]
+----
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.30</version>
+    <scope>provided</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.hibernate.orm</groupId>
+    <artifactId>hibernate-spatial</artifactId>
+    <version>6.4.2.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>com.oracle.database.jdbc</groupId>
+    <artifactId>ojdbc11</artifactId>
+    <version>23.2.0.0</version>
+</dependency>
+
+
+<!-- Additional tools to use with Jakarta Faces -->
+<dependency>
+    <groupId>org.primefaces</groupId>
+    <artifactId>primefaces</artifactId>
+    <version>13.0.5</version>
+    <classifier>jakarta</classifier>
+</dependency>
+<dependency>
+    <groupId>org.webjars.npm</groupId>
+    <artifactId>primeflex</artifactId>
+    <version>3.3.1</version>
+</dependency>
+<dependency>
+    <groupId>org.omnifaces</groupId>
+    <artifactId>omnifaces</artifactId>
+    <version>4.3</version>
+</dependency>
+
+<!-- Arquillian allows you to test enterprise code such as EJBs and Transactional(JTA)
+           JPA from JUnit/TestNG -->
+<dependency>
+    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+    <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+    <version>3.3.0</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.jboss.arquillian.junit5</groupId>
+    <artifactId>arquillian-junit5-container</artifactId>
+    <version>1.8.0.Final</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.jboss.arquillian.protocol</groupId>
+    <artifactId>arquillian-protocol-servlet-jakarta</artifactId>
+    <version>1.8.0.Final</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.wildfly.arquillian</groupId>
+    <artifactId>wildfly-arquillian-container-managed</artifactId>
+    <version>5.0.1.Final</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>2.0.11</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>2.0.11</version>
+</dependency>
+
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-params</artifactId>
+    <version>${junit.version}</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.assertj</groupId>
+    <artifactId>assertj-core</artifactId>
+    <version>3.25.3</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- Dependency for Functional UI testing using Selenium WebDriver -->
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>4.17.0</version>
+</dependency>
+<dependency>
+    <groupId>io.github.bonigarcia</groupId>
+    <artifactId>webdrivermanager</artifactId>
+    <version>5.6.3</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>io.github.bonigarcia</groupId>
+    <artifactId>selenium-jupiter</artifactId>
+    <version>5.0.1</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- For PrimeFaces DataExporter PDF and Excel -->
+<dependency>
+    <groupId>com.github.librepdf</groupId>
+    <artifactId>openpdf</artifactId>
+    <version>1.3.39</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi</artifactId>
+    <version>5.2.5</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi-ooxml</artifactId>
+    <version>5.2.5</version>
+</dependency>
+
+----
+
+* Add the following dependencies to the `<plugins>` element.
+
+poml.xml
+[source, xml]
+----
+<!-- Plugin to build a bootable JAR for WildFly -->
+<plugin>
+    <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_dev_mode -->
+    <!-- mvn wildfly-jar:dev-watch -->
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>11.0.0.Beta1</version>
+    <configuration>
+        <feature-packs>
+            <feature-pack>
+                <location>wildfly@maven(org.jboss.universe:community-universe)#31.0.0.Final</location>
+            </feature-pack>
+            <feature-pack>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-datasources-galleon-pack</artifactId>
+                <version>7.0.0.Final</version>
+            </feature-pack>
+        </feature-packs>
+        <layers>
+            <!-- https://docs.wildfly.org/31/Bootable_Guide.html#wildfly_layers -->
+            <layer>cloud-server</layer> <!-- includes ee-security -->
+            <layer>jsf</layer>
+            <layer>oracle-datasource</layer>
+        </layers>
+        <excluded-layers>
+            <layer>deployment-scanner</layer>
+        </excluded-layers>
+        <plugin-options>
+            <jboss-fork-embedded>true</jboss-fork-embedded>
+        </plugin-options>
+        <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_enabling_debug -->
+        <jvmArguments>
+            <!-- https://www.jetbrains.com/help/idea/attaching-to-local-process.html#attach-to-local -->
+            <!-- To attach a debugger to the running server from IntelliJ IDEA
+                1. From the main menu, choose `Run | Attach to Process`
+                2. IntelliJ IDEA will show the list of running local processes. Select the process with the `xxx-bootable.jar` name to attach to.
+            -->
+            <arg>-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</arg>
+        </jvmArguments>
+        <!-- Build a bootable JAR for cloud environment. -->
+        <cloud />
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+
+<!-- Plugin to run unit tests-->
+<!-- mvn test -->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.2.5</version>
+</plugin>
+
+<!-- Plugin to run functional tests -->
+<!--  mvn failsafe:integration-test -->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <version>3.2.5</version>
+</plugin>
+
+----
+
+[start=5]
+. Create the following Java packages
+.. `dmit2015.config` for Java configuraton classes such as `ApplicationConfig.java`
+.. `dmit2015.entity` for Java classes that is mapped to a database
+.. `dmit2015.persistence` for Java classes to manage entity classes
+.. `dmit2015.faces` for Jakarta Faces backing bean classes
+
+. In the Java package `dmit2015.config`, create a new *DMIT2015 Jakarta Persistence ApplicationConfig* file then configure the JTA data source definition for the *HR* Oracle Database schema.
+
+. Navigate to the `src/main/resources/META-INF` folder and delete the existing *persistence.xml* file. In the `src/main/resources/META-INF` create a new *DMIT2015 Jakarta Persistence JTA persistence.xml* file then configure the persistence unit for the *HR* Oracle Database schema.
+
+. In IntelliJ, open the *Database* window and add a new Data Source to the Oracle Database HR schema.
+
+. Commit and push your project to your GitHub repository.
+
+. The other team members can now clone the team repository.
+
+== REQUIREMENTS
+. From the Database window in IntelliJ, navigate to the tables folder of the HR schema. Right-mouse click on tables then select *Generate Persistence Mapping*
+.. Set the *Package* field to `dmit2015.entity`
+.. Make sure "Show default relationships" is checked
+.. In the Database Schema Mapping section
+... Change the "Map As" class name to singular name (ie. Change Countries to Country)
+... Expand the EMPLOYEES table and change the Mapped Type for the following columns:
+.... COMMISSION_PCT column mapped type change to `java.math.BigDecimal`
+.... HIRE_DATE column mapped type change to `java.time.LocalDate`
+.... SALARY column mapped type change to `java.math.BigDecimal`
+... Expand the JOB_HISTORY table and change the Mapped Type for the following columns:
+.... END_DATE column mapped type change to `java.time.LocalDate`
+.... START_DATE column mapped type change to `java.time.LocalDate`
+... Expand the JOBS table and change the Mapped Type for the following columns:
+.... MAX_SALARY column mapped type change to `java.math.BigDecimal`
+.... MIN_SALARY column mapped type change to `java.math.BigDecimal`
+... Click OK to generate the entity Java classes.
+. Due to a bug in the code generation tool. It will not generate all entities. Repeat the above step to resolve this issue.
+. The code generation tools assumes all primary key fields are identity fields. This is not true for the HR database schema. Open the generated entity Java classes and remove `@GeneratedValue` annotation line.
+. An entity class cannot a column mapped to multiple fields/properties. Add the attributes `, insertable=false, updatable=false` to the `@Column` annotation before the fields declaration of the following classes.
++
+|===
+|Class|Field
+
+| Country 
+| regionId
+
+| Department 
+| managerId, locationId
+
+| Employee 
+| jobId, managerId, departmentId
+
+| JobHistory
+| jobId, departmentId
+
+| Location 
+| countryId
+
+|===
+. Run the maven plugin:goal *wildfly-jar:dev-watch* to verify that your project is configured correctly and can be deployed.
+
+. Each team member create a new Git branch with their name to work on their assigned entity.
+
+. The generated entity classes does not include bean validation annotations. For each entity class add required field validation for all fields mapped to non-nullable column using `@NotBlank` for string fields and `@NotNull` for non-string fields.
+. In the Java package `dmit2015.persistence`, use the *DMIT2015 Jakarta Persistence CRUD Repository* file template to create Jakarta Persistence repository for the entities (Location, Department, Employee, Job).
+.. Complete the TODO in the `update` method. 
+Remove the TODO comments after you completed the TODO task.
+.. Add code to the `add` method to generate a new primary key value and assign it to the new entity
+
+. Create and code the Faces web pages and its supporting Java classes to perform CRUD operations on the remaining entities.
+
+. Modify `src/main/webapp/WEB-INF/faces-templates/layout.xhtml` and add links to the web pages to *List* data and *Create* data for each entity.
+
+. Run the maven plugin:goal *wildfly-jar:dev-watch* and verify that your project is Deployed.
+
+. Open a web browser and manually test all of your Faces web pages.
+
+. Create a JUnit Test Case class to test the functionality of each web pages using Selenium WebDriver. 
+
+. OPTIONAL CHALLENGE: In your entity list page use the http://www.primefaces.org:8080/showcase/ui/data/dataexporter/basic.xhtml?jfwid=00ae4[PrimeFaces DataExporter] component to add the option to export the data in the datatable to CSV, XLSX, or PDF file format.
+
+. Merge each team members Git branch into the main branch.
+
+== CODING REQUIREMENTS
+* Java package names must be all lower case (*10%* deduction if you do not follow this requirement)
+* Use camelCase for Java variables and method names (*10%* deduction if you do not follow this requirement)
+* Use TitleCase for Java class names (*10%* deduction if you do not follow this requirement)
+* All Java source files must include javadoc comments before the class with a description of the class, `@author` with your full name, and `@version` with the last date modifed. 
+(*10%* deduction if you do not follow this requirement)
+* Source code uses variables names and method names copied from another project and not related to the problem in this assignment. 
+For example using the terms Movie and Todo. (*10%* deduction if you do not follow this requirement)
+
+== MARKING GUIDE
+
+[cols="4,1"]
+|===
+|Requirement|Mark
+
+| One team member will demo by the checkpoint 1 date that the generated entity classes are configured correctly by running the maven command `wildfly-jar:dev-watch` and verifying no runtime errors are reported. 
+| 1
+
+| Each team member demonstrate their Faces web pages to perform CRUD for their entity
+
+- 0.5 mark for index.xhtml 
+
+- 1 mark for create.xhtml (includes bean validation)
+
+- 1 mark for edit.xhtml
+
+- 0.5 mark for delete.xhtml
+
+| 3
+
+| Each team member demonstrate their Functional UI Test using Selenium WebDriver for each web page.
+One mark for each test case that pass (create, read all, read one, update, delete).
+| 5
+
+| Each team member Git branch can be tested independently. 
+The main development Git branch integrates the branch from each team member and can be tested as one application.
+| 1
+
+|===
+
+
+== SUBMISSION REQUIREMENTS
+* Commit and push your project to your git repository before the due date.
+* Demonstrate in person during schedule class time the demonstration requirements on or before the first class after the due date.
+
+== Resources
+* https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html[Jakarta Persistence]
+* https://www.infoworld.com/article/3379043/what-is-jpa-introduction-to-the-java-persistence-api.html[What is JPA?]
+* https://assertj.github.io/doc/#assertj-core-assertions-guide[AssertJ Core Assertions Guide]
