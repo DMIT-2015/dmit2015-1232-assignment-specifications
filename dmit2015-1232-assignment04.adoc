@@ -87,6 +87,19 @@ Alternatively, you could, if you have permission, create a new SEQUENCE in the O
 CREATE SEQUENCE REGIONS_SEQ INCREMENT BY 10 START WITH 10 NOCACHE;
 ----
 
+=== Oracle Datasource Environment Variables for Galleon Feature Pack
+. Open a Terminal window and type `code ~/.profile` to open `.profile` with Visual Studio.
+Add the following entries to the end of the file.
+
+[source, text]
+----
+export ORACLE_URL=jdbc:oracle:thin:@localhost:1521/FREEPDB1
+export ORACLE_USER=HR
+export ORACLE_PASSWORD=Password2015
+----
+
+Save the file. Logout and login.
+
 === Setting up a Oracle Database 23c docker container on a Windows host machine
 To install Oracle Database 23c on a Windows host machine:
 
