@@ -347,7 +347,7 @@ poml.xml
         </jvmArguments>
         <!-- Build a bootable JAR for cloud environment. -->
         <cloud />
-        <!-- Increase timeout 3x from 6060 seconds to 180 seconds. -->
+        <!-- Increase timeout 3x from 60 seconds to 180 seconds. -->
         <timeout>180</timeout>
     </configuration>
     <executions>
