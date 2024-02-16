@@ -54,7 +54,7 @@ Short nextSequenceValue = (Short) _entityManager
         .getSingleResult();
 newDepartment.setDepartmentId(nextSequenceValue);
 
-_entityManager().persist(newDepartment);
+_entityManager.persist(newDepartment);
 
 ----
 
@@ -345,6 +345,7 @@ poml.xml
             -->
             <arg>-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</arg>
         </jvmArguments>
+        <timeout>180</timeout>
         <!-- Build a bootable JAR for cloud environment. -->
         <cloud />
     </configuration>
@@ -426,7 +427,7 @@ poml.xml
 | jobId, managerId, departmentId
 
 | JobHistory
-| jobId, departmentId
+| jobId, departmentId, employeeId
 
 | Location 
 | countryId
