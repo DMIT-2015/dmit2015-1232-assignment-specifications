@@ -1,0 +1,194 @@
+= DMIT2015 Assignment 5 - Jakarta EE Security with a Multiuser Entity System
+:source-highlighter: rouge
+:max-width: 90%
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+* Secure a JakartaEE appplication using the security features provided by the Jakarta EE container
+* Apply container-managed authentication, authorization, and data protection.
+* Secure the methods of a CDI managed bean using interceptors.
+* Create and use custom error pages for common HTTP error codes.
+* Create a multiuser entity system where each user can manage their own entity.
+
+== PROBLEM DESCRIPTION
+In this assignment you are going to convert the starter project for this assignment 
+that contains a non-secure single-user Bill and Bill Payment application
+to a secure multi-user application where each user can manage their own Bill and Bill Payment. 
+
+The application will support three security groups: *Finance*, *Accounting* and *Executive*.
+The *Finance* role is allowed to create, edit/update, and view their own Bill and BillPayment.
+The *Accounting* role is allowed view Bill and BillPayment for all users and can delete Bill and BillPayment.
+The *Executive* role is allowed to view Bill and BillPayment for all users.
+
+=== Undertow cannot connect to backend HTTPS server when acting as a proxy 
+
+After your configure your app to use HTTPS/SSL with Wildfly you may see the error *XNIO000011: Task io.undertow.protocols.ssl.SslConduit$5$1@6a6e313e failed with an exception: java.lang.NullPointerException* [https://access.redhat.com/solutions/5675351] in the Run window of IntelliJ.
+To resolve this issue you and edit the java.security file (`sudo gedit $JAVA_HOME/conf/security/java.security`)
+and add the following entry to the end of file
+
+[source,java]
+----
+jdk.tls.disabledAlgorithms=SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, \
+DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, \
+include jdk.disabled.namedCurves, RSASSA-PSS
+
+----
+
+
+== GIT REPOSITORY SETUP
+. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Click on *Accept this assignment* to allow github to create a private github repository for you.
+. Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
+. Click on *Clone or download* button then copy the URL to your repository to the clipboard.
+
+== PROJECT SETUP
+. From IntelliJ IDEA open the project *dmit2015-1232-assignment05-start* that is included in the GitHub repository for this assignment.
+. Open a Terminal window and type the command `mvn wildfly-jar:dev-watch` to start the Jboss WildFly server.
+. Once the project has been deployed open a browser and navigate to `http://localhost:8080` and using the navigation menu verify that the pages for List Bill and Create Bill are fully functional.
+. Navigate to the `src/main/java/dmit2015/config` folder and open `ApplicationConfig.java` and change the `@DataSourceDefinition` 
+to an SQL Server, Oracle, H2 file database.
+. Open a browser and verify that the pages for List Bill and Create Bill are still fully functional.
+
+
+== REQUIREMENTS
+. Configure the *wildfly-jar-maven-plugin* in `pom.xml` to:
+.. Add a `layer` element for `ee-security`
+.. Add a `layer` element for `undertow-https`
+.. Add a `cli-session` to enable Jakarta EE Security
+
+. Add a secrity constraint in `web.xml` to force the use HTTPS for all URLs in the application.
+
+. Add a security constraint in `web.xml` to restrict access to the following url patterns and role names.
++
+[cols="2,1"]
+|===
+| url-pattern | role-name
+
+| /bills/create.xhtml
+
+/bills/edit.xhtml
+| Finance
+|===
++
+. Add a security constraint in `web.xml` to restrict access to the following url patterns and role names.
++
+[cols="2,1"]
+|===
+| url-pattern | role-name
+
+| /bills/delete.xhtml
+
+/bills/payments/create.xhtml
+
+/bills/payments/edit.xhtml
+
+/bills/payments/delete.xhtml
+| Accounting
+|===
++
+. Add a security constraint in `web.xml` to restrict access to the following url patterns and role names.
++
+[cols="2,1"]
+|===
+| url-pattern | role-name
+
+| /bills/index.xhtml
+
+/bills/details.xhtml
+
+/bills/detailsContent.xhtml
+
+/bills/payments/index.xhtml
+
+/bills/payments/details.xhtml
+
+/bills/payments/detailsContent.xhtml
+| Accounting
+
+Finance
+
+Executive
+|===
++
+
+. Configure the project (`ApplicationConfig.java`, `OidcConfig.java`, `OidcLogout.java`) to use OpenIDConnect Authentication mechanism.
+
+. Configure the project (`ApplicationConfig.java`) to use a LDAP identity store to the Windows 2022 Server VM.
+
+. Modify the Faces layout file `/src/main/webapp/WEB-INF/faces-templates/layout.xhml` with a link to login and a link logout.
+
+. Modify `Bill.java` and add a property for the authenticated `username`.
+
+. Using either an CDI Interceptor or modify the `BillRepository.java` method `create()` directly to set the `username` of the Bill before it is persisted.
+
+. Modify `BillRepository.java` method `findAll()` directly to work as follows:
+.. If the caller is anonymous (non-authenticated) user then throw an `RuntimeException`.
+.. If the caller is the role *Finance* then return a list of Bill entity filter by the username of the caller.
+.. If the caller is the role *Accounting* or *Executive* then return a list of a Bill entity.
+.. If the caller is not in the role *Finance* or *Accounting* or *Executive* then return a empty list.
+
+. Modify `BillPayment.java` and add a property for the authenticated `username`.
+
+. Using either an CDI Interceptor or modify the `BillPaymentRepository.java` method `create()` 
+directly to set the `username` of the BillPayment before it is persisted.
+
+. Modify `BillPaymentRepository.java` method `findAll()` to work as follows:
+.. If the caller is anonymous (non-authenticated) user then throw an `RuntimeException`.
+.. If the caller is the role *Finance* then return a list of BillPayment entity filter by the username of the caller.
+.. If the caller is the role *Accounting* or *Executive* then return all BillPayment entity.
+.. If the caller is not in the role *Finance* or *Accounting* or *Executive* then return a empty list.
+
+. Using a CDI Interceptor restrict access to the methods `create()` and `update()` to the role *Finance* in `BillRepository.java`.
+
+. Using a CDI Interceptor restrict access to the methods `create()` and `update()` to the role *Accounting* in `BillPaymentRepository.java`.
+
+. Using a CDI Interceptor restrict access to the methods `remove()` and `delete()` to the role *Accounting* in `BillRepository.java` and `BillPaymentRepository.java`.
+
+. Using a CDI Interceptor restrict access to the method `findOneById()` to the roles *Finance*, *Accounting*, *Executive*.
+   
+. Configure your project to display custom error pages for error codes 403, 404, and 500.
+
+. Test your application that you can login using an *Finance* account and create/edit Bills and BillPayments. 
+You can now open *persistence.xml* change the property `jakarta.persistence.schema-generation.database.action` value 
+from `drop-and-create` to `none` to avoid losing all your data each time your application starts.
+
+
+== MARKING GUIDE
+
+[cols="4,1"]
+|===
+| Demonstration Requirement | Marks
+
+| Demonstrate that all Web application URLs are transported over HTTPS
+| 1
+
+| Demonstrate that you can login using an *Finance* account, create a bill, view your own bills, 
+and a custom 403 error page is shown when you try to delete a bill or pay a bill.
+| 2
+
+| Demonstrate that you can login using an *Accounting* account, view all bills and payments, pay a bill, delete a bill, 
+delete a payment, and a custom 403 error page is shown when you try to create or edit a bill.
+| 2
+
+| Demonstrate that you can login using an *Executive* account, view all bills and payments, view bill details, 
+view payment details, and a custom 403 error page is shown when you try to create/edit/delete a bill or pay a bill.
+| 2
+
+| Demonstrate method-level security by login using an *IT* account, 
+using the Public menu links to create a new bill results in an access denied message and the list page shows no bills.
+| 2
+
+| Demonstrate that the server returns custom error pages for HTTP status 404 and 500.
+| 1
+|===
+
+
+== SUBMISSION/DEMONSTRATION REQUIREMENTS
+* Commit and push your project to your git repository before the due date.
+* Demonstrate in person the demonstration requirements on or before the due date.
+
+== Resources
+* https://eclipse-ee4j.github.io/jakartaee-tutorial/#security-2[Security in the Jakarta EE Platform]
+* https://javaee.github.io/tutorial/interceptors.html#GKEED[Using Jakarta EE Interceptors]
+* https://jakarta.ee/specifications/interceptors/2.0/interceptors-spec-2.0.html[Jakarta Interceptors]
