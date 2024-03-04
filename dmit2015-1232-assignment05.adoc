@@ -114,8 +114,6 @@ Executive
 
 . Configure the project (`ApplicationConfig.java`, `OidcConfig.java`, `OidcLogout.java`) to use OpenIDConnect Authentication mechanism.
 
-. Configure the project (`ApplicationConfig.java`) to use a LDAP identity store to the Windows 2022 Server VM.
-
 . Modify the Faces layout file `/src/main/webapp/WEB-INF/faces-templates/layout.xhml` with a link to login and a link logout.
 
 . Modify `Bill.java` and add a property for the authenticated `username`.
