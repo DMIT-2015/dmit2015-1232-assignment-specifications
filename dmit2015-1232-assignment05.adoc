@@ -148,8 +148,12 @@ directly to set the `username` of the BillPayment before it is persisted.
 . Configure your project to display custom error pages for error codes 403, 404, and 500.
 
 . Test your application that you can login using an *Finance* account and create/edit Bills and BillPayments. 
-You can now open *persistence.xml* change the property `jakarta.persistence.schema-generation.database.action` value 
-from `drop-and-create` to `none` to avoid losing all your data each time your application starts.
+
+. To avoid losing all your data each time your application starts.
+.. Open *ApplicationConfig.java* comment out the line `url="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=LEGACY;",`
+and uncomment the line `url="jdbc:h2:file:~/jdk/databases/h2/DMIT2015CourseDB;MODE=LEGACY;",` 
+.. Open *persistence.xml* change the property `jakarta.persistence.schema-generation.database.action` value 
+from `drop-and-create` to `create`.
 
 
 == MARKING GUIDE
