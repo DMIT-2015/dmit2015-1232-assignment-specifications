@@ -121,7 +121,7 @@ Response Body:
 . Manually test your REST API endpoints using an Http Client of your choice (IntelliJ IDEA HTTP Client, curl command, Swagger-Ui,Postman, or SoapUI).
 . Create a Data Transter Object (DTO) class for your assignment that excludes properties for createTime and updateTime.
 . Create REST API endpoints to perform CRUD operations on the Data Transfer Object (DTO) for the entity.
-. Manually test the DTO version of the REST API endpoints using an Http Client of your choice (IntelliJ IDEA HTTP Client, curl command, Swagger-Ui,Postman, or SoapUI).
+. Manually test the DTO version of the REST API endpoints using an Http Client of your choice (IntelliJ IDEA HTTP Client, curl command, Swagger-Ui, Postman, or SoapUI).
 
 == REST CLIENT PROJECT REQUIREMENTS
 . Open the project located in the *dmit2015-1232-assignment06-restclient-start* folder of your github repository.
@@ -141,22 +141,22 @@ Response Body:
 |===
 |Mark|Requirement
 
-| Demonstrate manually creating a new entity using a tool of your choice.
+| Demonstrate manually creating a new entity data using a tool of your choice.
 | 1
 
-| Demonstrate manually reading all entities using a tool of your choice.
+| Demonstrate manually reading all entity data using a tool of your choice.
 | 1
 
-| Demonstrate manually updating a entity using a tool of your choice.
+| Demonstrate manually updating entity data using a tool of your choice.
 | 1
 
-| Demonstrate manually deleting a entity by the `id` using a tool of your choice.
+| Demonstrate manually deleting entity data by the `id` using a tool of your choice.
 | 1
 
-| Demonstrate using REST Assured to create a new entity.
+| Demonstrate using REST Assured to create new entity data or update an existing entity data.
 | 1
 
-| Demonstrate using REST Assured to update a entity.
+| Demonstrate using REST Assured to find one or all entity data.
 | 1
 
 | Demonstrate a REST Client application that displays list of data fetched from a REST API.
