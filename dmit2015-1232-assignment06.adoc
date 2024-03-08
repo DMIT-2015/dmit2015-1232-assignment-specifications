@@ -1,0 +1,205 @@
+= DMIT2015 Assignment 6 - REST API
+:source-highlighter: rouge
+:max-width: 90%
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+* Create RESTful web services using JAX-RS to performs CRUD operations
+* Test CRUD operations of RESTful web services using the curl command
+* Write and run an integration test of RESTful web services using REST Assured
+* Invoke RESTful services over HTTP using a Rest Client from a Jakarta Faces web application
+
+== PROBLEM DESCRIPTION
+This assignment can be completed individually or in a team of a maximum of 4 members.
+Each team member will implement a REST API and REST Client for a different entity.
+
+In this assignment you are provided with five projects:
+
+. A *dmit2015-1232-assignment06-restapi-start01* project is for team member 1 to build REST API endpoints on a entity of your choice. 
+The REST API application will run on port *8090*.
+. A *dmit2015-1232-assignment06-restapi-start02* project is for team member 2 to build REST API endpoints on a entity of your choice. 
+The REST API application will run on port *8091*.
+. A *dmit2015-1232-assignment06-restapi-start03* project is for team member 3 to build REST API endpoints on a entity of your choice. 
+The REST API application will run on port *8092*.
+. A *dmit2015-1232-assignment06-restapi-start04* project is for team member 4 to build REST API endpoints on a entity of your choice. 
+The REST API application will run on port *8093*.
+. A *dmit2015-1232--assignment06-restclient-start* project that access REST API to perform CRUD operations. 
+The REST Client application will run on port *8080*.
+
+== GIT REPOSITORY SETUP
+. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Click on *Accept this assignment* to allow github to create a private github repository for you.
+. Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
+. Click on *Clone or download* button then copy the URL to your repository to the clipboard.
+. You can now import the git repository to the *~/IdeaProjects* folder from IntelliJ IDEA.
+
+== REST API PROJECT REQUIREMENTS
+. Open the project located in the *dmit2015-1232-assignment06-restapi-start* folder of your github repository.
+. Design and implement a JPA entity class of a topic of your choice with an id, createTime, updateTime, version, and three additional fields.
+The `createTime` property is assigned by JPA before the entity is persisted.
+The `updateTime` property is assigned by JPA before the entity is updated.
+The `version` property is assigned by JPA and is used for optimistic locking mechanism. 
+For example your could design and implement an entity class to manage information on Laptops.
+
+    -----------------------------------------------------
+    | Laptop                                            |
+    |---------------------------------------------------|
+    | id: Long                                          |
+    | brand: String                                     |
+    | screenSize: BigDecimal                            |
+    | processor: String                                 |
+    | memoryGB: Integer                                 |
+    | hardDriveGB: Integer                              |
+    | version: Integer                                  |
+    | createTime: LocalDateTime                         |
+    | updateTime: LocalDateTime                         |
+    |---------------------------------------------------|
+    | Laptop() :                                        |
+    -----------------------------------------------------
+
+If you are working in a team of 4 members than you will need to create another JPA entity that may or may not be related to the first JPA entity.
+
+[start=3]
+. Create a new JPA respository with methods to perform CRUD (Create, Read One, Read All, Update, Delete) operations on each JPA entity.
+
+. Create a new REST API using JAX-RS to perform CRUD operations on each JPA entity. 
+When you create or update an entity you do NOT need to include the properties for `createTime` and `updateTime` as they will be assigned by the system.
+When you update an entity you must include the `version` property required by JPA for optimistic locking mechanism.
+
+. Add a `README.md` file in the root of the project folder with a Test Plan to test your web services using the template shown below. 
+Replace the underline with your own test data.
+
+[cols="2,2,2,1"]
+|===
+| Test case | Test data | Expected result | Checked
+
+| Read All entity
+| url: http://localhost:8090/restapi/YourEntity  
+| Status Code: 200
+
+Response Body: _ _ _ _ _
+
+| 
+
+| Create new entity
+| url: http://localhost:8090/restapi/YourEntity  
+
+{ 
+    "property1Name": "property1Value",
+    "property2Name": "property2Value",
+    "property3Name": "property3Value"
+}
+
+...
+
+| Status Code: 201
+
+Location: http://localhost:8090/restapi/YourEntity/idValue
+| 
+
+| Read One entity by id
+| url:  _ _ _ _ _  
+| Status Code: 200
+
+Response Body: 
+
+{
+    "id": idValue 
+    "property1Name": "property1Value",
+    "property2Name": "property2Value"
+    "property3Name": "property3Value"
+}
+
+|
+
+| Update entity by id 
+| url: http://localhost:8090/restapi/YourEntity/idValue  
+
+{
+    "id": idValue 
+    "property1Name": "property1Value",
+    "property2Name": "property2Value"
+    "property3Name": "property3Value"
+}
+ 
+
+...
+
+| Status Code: 200
+|
+
+| Delete entity by id
+| url:  http://localhost:8090/restapi/YourEntity/idValue  
+| Status Code: 204
+|
+
+|===
+
+[start=5]
+. Manually test your REST API endpoints using an Http Client of your choice (IntelliJ IDEA HTTP Client, curl command, Swagger-Ui,Postman, or SoapUI).
+. Create a Data Transter Object (DTO) class for your assignment that excludes properties for createTime and updateTime.
+. Create REST API endpoints to perform CRUD operations on the Data Transfer Object (DTO) for the entity.
+. Manually test the DTO version of the REST API endpoints using an Http Client of your choice (IntelliJ IDEA HTTP Client, curl command, Swagger-Ui,Postman, or SoapUI).
+
+== REST CLIENT PROJECT REQUIREMENTS
+. Open the project located in the *dmit2015-1232-assignment06-restclient-start* folder of your github repository.
+. Automate the testing of your REST API endpoints by writing a integration test with REST Assured. 
+. Create a REST Client application using either Jakarta Faces or JavaScript with pages to display a list of entities fetched from your REST API and a page to create a new entity using your your REST API.
+.. If you are building a REST Client using Microprofile REST Client it is the same technique you used to build REST Client to access the Firebase Realtime Database REST API with the exception that the URLs does not end with *.json* suffix.
+
+== CODING REQUIREMENTS
+* An JPA entity on *TodoItem* or *Movie* will not be accepted. 
+* You *MUST* demo your assigment to your instructor (*100%* deduction if you do not demo)
+* Your integration test data *MUST* match your test plan (*10%* deduction for each test case where the test data in the code does not match the test plan)
+* Your REST API must process Data Transfer Objects (DTOs) instead of JPA entities (*20%* deduction if REST API endpoints proceses JPA entities instead of DTOs)
+
+== MARKING GUIDE
+
+[cols="4,1"]
+|===
+|Mark|Requirement
+
+| Demonstrate manually creating a new entity using a tool of your choice.
+| 1
+
+| Demonstrate manually reading all entities using a tool of your choice.
+| 1
+
+| Demonstrate manually updating a entity using a tool of your choice.
+| 1
+
+| Demonstrate manually deleting a entity by the `id` using a tool of your choice.
+| 1
+
+| Demonstrate using REST Assured to create a new entity.
+| 1
+
+| Demonstrate using REST Assured to update a entity.
+| 1
+
+| Demonstrate a REST Client application that displays list of data fetched from a REST API.
+| 1
+
+| Demonstrate a REST Client application that creates a new data using a REST API.
+| 1
+
+| Demonstrate a REST Client application that allows editing and updating existing data using a REST API.
+| 2
+
+|===
+
+
+== SUBMISSION/DEMONSTRATION REQUIREMENTS
+* Commit and push your project to your git repository before the due date.
+* Demonstrate in person your assignment on your instructor on the due date.
+
+== Resources
+* https://eclipse-ee4j.github.io/jakartaee-tutorial/#building-restful-web-services-with-jakarta-rest[Building RESTful Web Services with Jakarta REST]
+* https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html[IntelliJ IDEA HTTP Client]
+* https://www.jetbrains.com/help/idea/exploring-http-syntax.html[IntelliJ IDEA HTTP request syntax]
+* https://curl.se/docs/manpage.html[curl man page]
+* https://rest-assured.io/[REST-assured]
+* https://github.com/rest-assured/rest-assured/wiki/Usage[REST-assured Usage]
+* https://github.com/eclipse/microprofile-rest-client[Rest Client for MicroProfile GitHub]
+* https://download.eclipse.org/microprofile/microprofile-rest-client-3.0/microprofile-rest-client-spec-3.0.html[Rest Client for MicroProfile Specification]
