@@ -1,0 +1,124 @@
+= DMIT2015 Assignment 7 - Microservices and Microprofile JWT RBAC
+:source-highlighter: rouge
+:max-width: 90%
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+* Use a microservices architectural approach to develop REST API endpoints.
+* Develop secure REST API endpoints using JAX-RS and Microprofile JWT.
+* Develop a REST API endpoint to generate JWT for LDAP or Database accounts.
+* Manually test an secure REST API using a tool (Http Request, Postman, SoapUI, Curl, etc) of your choice 
+* Develop a REST Client Jakarta Faces web application that accesses secured REST API endpoints using JWT.
+
+== PROBLEM DESCRIPTION
+This assignment can be completed individually or in a team of a maximum of 4 members.
+For team of 2 or more members each team member must implement a different REST API and the corresponding REST client.
+
+In this assignment you are provided with three projects:
+
+. A *dmit2015-assignment07-rbac-restclient-start* project for building RBAC REST API endpoints on a entity of your choice. The REST API application will run on port *8181*.
+. A *dmit2015-assignment07-multiuser-restclient-start* project for building multi-user REST API endpoints on a entity of your choice. The REST API application will run on port *8182*.
+. A *dmit2015-assignment07-restclient-start* project for building REST Client application using Jakarta Faces that access the Keycloak JWT REST API, your RBAC REST API, and your multi-user REST API. The REST Client application will run on port *8080*.
+
+In this assigment you will develop three microservices REST API and a REST Client Jakarta Faces applications that utilizies the REST API from three microservices REST API.
+The three microservices REST API that you will develop are as follows:
+
+. A REST API *jwt* microservice that runs on port *8180* with an endpoint to generate a JWT for an LDAP or Database account.
+.. You will be configuring Keycloak to generate a JWT for an LDAP or Database account.
+. A REST API *rbac* microservice that runs on port *8181* with secure endpoint to manage a collection of entity where:
+.. The roles *Administration*, *Executive*, and *Finance* can add a entity
+.. The roles *Administration*, and *Executive* can update an entity
+.. The role  *Executive* can delete an entity
+. A REST API *multiuser* microservice that runs on port *8182* with secure endpoint where each authenticated user can manage their own collection of entity.
+
+You can re-use the entity you created for assignment 6 for both the *rbac* and *multiuser* microservice.
+For the *multiuser* microservice you will need to modify the entity to track the owner of the entity.
+
+You are *not* required to write an integration test for the JPA repositories and the REST API resource classes.
+
+== GIT REPOSITORY SETUP
+. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Click on *Accept this assignment* to allow github to create a private github repository for you.
+. Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
+. Click on *Clone or download* button then copy the URL to your repository to the clipboard.
+. You can now import the git repository to the *~/IdeaProjects* folder from IntelliJ IDEA.
+
+== Keycloak JWT authentication configuration
+. In the admin panel, click on the *Client* link.
+. In the Clients list page, click the *Create client* button.
+. In the *Client Id* field enter *dmit2015-assignment07-jwt-client* then click *Next*.
+. Turn on the *Client authentication* switch.
+. Turn on the *Authorization* switch.
+. Click on the *Save* button.
+. Click on the *Client Scopes* tab.
+. Click the "dmit2015-jwt-client-dedicated". 
+. Click "Add mapper | From predefined mappers" then select "groups" and "upn".
+. In the admin panel, click on the *Client scopes* link.
+. Find the *microprofile-jwt* name then change "Assigned Type" to *Default*.
+. You can now create an IntelliJ HTTP Request to get JWT 
++
+KeycloakHttpRequest.http
+[source, java]
+----
+// Authorize Endpoint
+// {{server}}/auth/realms/{{realm}}/protocol/openid-connect/auth?response_type=code&client_id={{jwtClient}}
+// The token endpoint allows us to retrieve an access token, refresh token, or id token. OAuth 2.0 supports different grant types, like authorization_code, refresh_token, or password.
+// http://localhost:8180/realms/dmit2015realm/protocol/openid-connect/token
+// https://stackoverflow.com/questions/75521972/keycloak-jwt-token-groups-missing
+### Token Endpoint - Token for User1
+POST {{keycloakserver}}/realms/{{realm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+username={{user1_username}}&password={{user1_password}}&client_id={{jwtClient}}&client_secret={{jwtClientSecret}}&grant_type=password
+
+----
+    
+== REQUIREMENTS
+. Configure Keycloak to manage JWT for you application using either LDAP or database accounts.
+. In the *dmit2015-assignment07-rbac-restapi-start* microservice REST API project, create endpoints to manage your collection of entity. 
+Add the following security restrictions to REST API endpoints:
+.. The roles *Administration*, *Executive*, and *Finance* can add a entity
+.. The roles *Administration*, and *Executive* can update an entity
+.. The role *Executive* can delete an entity
+. In the *dmit2015-assignment07-multiuser-restapi-start* microservice REST API project, create endpoints for each authenticated user to manage their own collection of entity.
+. In the *dmit2015-assignment07-restclient-start* project, create the Jakarta Faces pages to perform CRUD operations on the single user entity and to perform CRUD operations on the multiuser entity.
+
+== CODING REQUIREMENTS
+* Do *NOT* reuse the instructor's demo project from this term or previous terms as your assigment project (*100%* deduction for re-submitting instructor work)
+* You *MUST* demo your assigment to your instructor (*100%* deduction if you do not demo)
+* Source code uses variables names and method names copied from another project and not related to the problem in this assignment. For example using the terms Movie and Todo. (*10%* deduction for each file if you do not follow this requirement)
+
+
+[cols="4,1"]
+|===
+| Demonstration Requirement | Marks
+
+a| REST Client frontend application 
+
+* (1 mark) Demonstrate automatic redirect to the login page when accessing a page that requires a JWT.
+* (1 mark) Demonstrate login.
+* (1 mark) Demonstrate logout.
+* (1 mark) Demonstrate single user page listing all entities.
+* (2 mark) Demonstrate single user page creating a new entity with a user with permission and a user without permission.
+* (2 mark) Demonstrate single user page editing an entity with a user with permission and a user without permission.
+* (2 mark) Demonstrate single user page deleting an entitywith a user with permission and a user without permission.
+* (2 mark) Demonstrate multiuser page listing all entities using a JWT.
+* (2 mark) Demonstrate multiuser page creating a new entity using a JWT.
+* (1 mark) Demonstrate multiuser page editing an entity using a JWT.
+* (1 mark) Demonstrate multiuser page deleting an entity using a JWT.
+
+|16
+
+|===
+
+== SUBMISSION/DEMONSTRATION REQUIREMENTS
+* Commit and push your project to your git repository before the due date.
+* Demonstrate in person your assignment on your instructor on the due date.
+
+== Resources
+* https://www.jetbrains.com/help/idea/exploring-http-syntax.html[IntelliJ IDEA HTTP request syntax]
+* https://download.eclipse.org/microprofile/microprofile-jwt-auth-2.1/microprofile-jwt-auth-spec-2.1.html[Eclipse MicroProfile Interoperable JWT RBAC]
+* https://download.eclipse.org/microprofile/microprofile-rest-client-3.0/microprofile-rest-client-spec-3.0.html[Rest Client for MicroProfile]
+* https://openliberty.io/guides/microprofile-rest-client.html[Consuming RESTful services with template interfaces]
+* https://www.mastertheboss.com/jboss-frameworks/jboss-maven/maven-multi-module-tutorial/[Maven Multi module tutorial]
