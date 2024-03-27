@@ -1,0 +1,5 @@
+Truncate Table dbo.[FactOrders]
+Truncate Table dbo.[DimCustomers]
+Truncate Table dbo.[DimProducts]
+Truncate Table dbo.[DimEmployees]
+Truncate Table dbo.[DimDates]

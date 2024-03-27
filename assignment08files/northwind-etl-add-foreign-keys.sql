@@ -1,0 +1,7 @@
+ALTER TABLE dbo.DimEmployees ADD CONSTRAINT FK_DimEmployees_DimEmployees FOREIGN KEY ([ManagerKey]) REFERENCES dbo.DimEmployees(EmployeeKey)
+ALTER TABLE dbo.FactOrders ADD CONSTRAINT FK_FactOrders_DimCustomers FOREIGN KEY (CustomerKey) REFERENCES dbo.DimCustomers(CustomerKey)
+ALTER TABLE dbo.FactOrders ADD CONSTRAINT FK_FactOrders_DimEmployees FOREIGN KEY (EmployeeKey) REFERENCES dbo.DimEmployees(EmployeeKey)
+ALTER TABLE dbo.FactOrders ADD CONSTRAINT FK_FactOrders_DimProducts FOREIGN KEY (ProductKey) REFERENCES dbo.DimProducts(ProductKey)
+ALTER TABLE dbo.FactOrders ADD CONSTRAINT FK_FactOrders_DimDates_OrderDate FOREIGN KEY (OrderDateKey) REFERENCES dbo.DimDates([DateKey])
+ALTER TABLE dbo.FactOrders ADD CONSTRAINT FK_FactOrders_DimDates_RequiredDate FOREIGN KEY (RequiredDateKey) REFERENCES dbo.DimDates([DateKey])
+ALTER TABLE dbo.FactOrders ADD CONSTRAINT FK_FactOrders_DimDates_ShippedDate FOREIGN KEY (ShippedDateKey) REFERENCES dbo.DimDates([DateKey])

@@ -24,7 +24,7 @@ The REST API application will run on port *8091*.
 The REST API application will run on port *8092*.
 . A *dmit2015-1232-assignment06-restapi-start04* project is for team member 4 to build REST API endpoints on a entity of your choice. 
 The REST API application will run on port *8093*.
-. A *dmit2015-1232--assignment06-restclient-start* project that access REST API to perform CRUD operations. 
+. A *dmit2015-1232-assignment06-restclient-start* project that access REST API to perform CRUD operations. 
 The REST Client application will run on port *8080*.
 
 == GIT REPOSITORY SETUP

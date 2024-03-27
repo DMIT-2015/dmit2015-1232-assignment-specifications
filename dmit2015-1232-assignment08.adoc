@@ -1,0 +1,289 @@
+= DMIT2015 Assignment 8 - Batch Processing
+:source-highlighter: rouge
+:max-width: 90%
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+- Create a batch job with a batchlet to perform an ETL process to move data from a OLTP database to an OLAP database. 
+- Send an email notification.
+
+== PROBLEM DESCRIPTION
+In this assignment you will create an Batch Job to perform the ETL processing with SQL to copy data from the *Northwind* OLTP database 
+to the *DWNorthwindOrders* OLAP database.
+
+The steps need to perform the ETL processing with SQL are as follows:
+
+. Drop Foreign Keys
+. Clear All (Truncate) Tables
+. Fill DimCustomers table.
+. Fill DimEmployees table.
+. Fill DimProducts table.
+. Fill DimDates table.
+. Add Null Data Lookup Values.
+. Fill FactOrders table.
+. Add Foreign Key Constraints.
+
+=== Docker Container for SQL Server 
+On the Ubuntu Desktopn VM there is a docker container for SQL Server which must be manually started when you need to use them.
+The following commands can be used to manage the Docker containers.
+. To show all running docker containers
+[source, console]
+----
+docker ps
+----
+. To show docker containers
+[source, console]
+----
+docker ps --all
+----
+. To start the stopped docker container for SQL Server
+[source, console]
+----
+docker start dmit2015-sqlserver
+----
+. To stop the running docker container for SQL Server
+[source, console]
+----
+docker stop dmit2015-sqlserver
+----
+
+== Create Northwind database and DWNorthwindOrders database
+. Start the Docker container for *dmit2015-sqlserver*
+. Download from Moodle the *InstNwnd.sql* SQL script file that contains the code to create the *Northwind* database.
+. Download from Moodle the *Create DWNorthwindOrders Script.sql* script file that contains the code to create the *DWNorthwindOrders* database.
+. Open Azure Data Studio and double-click on the *localhost.DMITCourseDB* connection.\
+. From the main menu click "File | Open File..."
+.. The Browse dialog open. Navigate to the Downloads folder and select *InstNwnd.sql*.
+.. Execute the query by clicking on the *Run* button located in the toolbar.
+. From the main menu click "File | Open File..."
+.. The Browse dialog open. Navigate to the Downloads folder and select *Create DWNorthwindOrders Script.sql*.
+.. Execute the query by clicking on the *Run* button located in the toolbar.
+
+== GIT REPOSITORY SETUP
+. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Click on *Accept this assignment* to allow github to create a private github repository for you.
+. Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
+. Click on *Clone or download* button then copy the URL to your repository to the clipboard.
+. You can now import the git repository to the *~/IdeaProjects* folder from IntelliJ IDEA or from a Terminal window.
+
+== PROJECT SETUP
+. Download the SQL script file to create the Northwind OLTP database from https://github.com/Apress/pro-sql-server-2012-bi-solutions/blob/master/_BookFiles/_SetupFiles/Databases/InstNwnd.sql
+. Download the SQL script to create the DWNorthwindOrdsers OLAP database from
+. Open IntelliJ IDEA and create a new project using the *Jakarta EE* module and change following settings:
+ .. Name: `dmit2015-assignment08-yourname`
+ .. Location: `~/IdeaProjects/yourAssignment08GithubRepo`
+ .. Template: `REST Service`
+ .. Application server: `<No appliation server>` 
+ .. Group: `dmit2015`
+ .. Artifact: `assignment08-yourname`
+ .. Check Next.
+. On the Dependencies dialog, change the Version to *Jakarta EE 10* the select the following specifications:
+ .. Web Profile (10.0.0)
+ .. Batch (2.1.1)
+. Click *Create*
+. Make the following changes to `pom.xml`
+* Change the element value for both `maven.compiler.target` and `maven.compiler.target` to `*21*`.
+* Change the element value for `junit.version` to `*5.10.2*`.
+* *Add* the following dependencies to the `<dependencies>` element.
+
+poml.xml
+[source, xml]
+----
+<dependency>
+    <groupId>jakarta.mail</groupId>
+    <artifactId>jakarta.mail-api</artifactId>
+    <version>2.1.3</version>
+</dependency>
+
+<dependency>
+    <groupId>org.eclipse.microprofile.config</groupId>
+    <artifactId>microprofile-config-api</artifactId>
+    <version>3.1</version>
+</dependency>
+
+<dependency>
+    <groupId>jakarta.batch</groupId>
+    <artifactId>jakarta.batch-api</artifactId>
+    <version>2.1.1</version>
+</dependency>
+
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.30</version>
+    <scope>provided</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.hibernate.orm</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>6.4.4.Final</version>
+</dependency>
+<dependency>
+    <groupId>org.hibernate.orm</groupId>
+    <artifactId>hibernate-spatial</artifactId>
+    <version>6.4.4.Final</version>
+</dependency>
+
+<dependency>
+    <groupId>com.microsoft.sqlserver</groupId>
+    <artifactId>mssql-jdbc</artifactId>
+    <version>12.6.1.jre11</version>
+</dependency>
+
+----
+
+* Add the following dependencies to the `<plugins>` element.
+
+poml.xml
+[source, xml]
+----
+<!-- Plugin to build a bootable JAR for WildFly -->
+<plugin>
+    <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_dev_mode -->
+    <!-- mvn wildfly-jar:dev-watch -->
+    <groupId>org.wildfly.plugins</groupId>
+    <artifactId>wildfly-jar-maven-plugin</artifactId>
+    <version>11.0.0.Beta1</version>
+    <configuration>
+        <feature-pack-location>wildfly@maven(org.jboss.universe:community-universe)#31.0.1.Final</feature-pack-location>
+        <layers>
+            <!-- https://docs.wildfly.org/31/Bootable_Guide.html#wildfly_layers -->
+            <layer>jaxrs-server</layer>
+            <layer>ejb</layer>
+            <layer>mail</layer>
+            <layer>batch-jberet</layer>
+            <layer>microprofile-config</layer>
+            <layer>jsf</layer>
+        </layers>
+        <excluded-layers>
+            <layer>deployment-scanner</layer>
+        </excluded-layers>
+        <plugin-options>
+            <jboss-fork-embedded>true</jboss-fork-embedded>
+        </plugin-options>
+        <!-- https://docs.wildfly.org/bootablejar/#wildfly_jar_enabling_debug -->
+        <jvmArguments>
+            <!-- https://www.jetbrains.com/help/idea/attaching-to-local-process.html#attach-to-local -->
+            <!-- To attach a debugger to the running server from IntelliJ IDEA
+                1. From the main menu, choose `Run | Attach to Process`
+                2. IntelliJ IDEA will show the list of running local processes. Select the process with the `xxx-bootable.jar` name to attach to.
+            -->
+            <arg>-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</arg>
+        </jvmArguments>
+        <timeout>120</timeout>
+        <cli-sessions>
+            <cli-session>
+                <script-files>
+                    <script>/home/user2015/jdk/server/wildfly-scripts/configure-mail.cli</script>
+                </script-files>
+            </cli-session>
+        </cli-sessions>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>package</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+
+----
+
+[start=5]
+ . Create the following Java packages in your project:
+    .. `common.batch`
+    .. `common.config`  
+    .. `dmit2015.batch` 
+    .. `dmit2015.ejb`
+    .. `dmit2015.resource`
+
+. Define a data source defintion to the *DWNorthwindOrders* database.
+
+. Open the Jakarta Persistence configuration file *persistence.xml* and define a persistence unit to the data source definition for the *DWNorthwindOrders* database. 
+
+. Open the *HelloApplication.java* class and change the @ApplicationPath value from `api` to `restapi`.
+. Download from Moodle all the SQL script that begins with *northwind-etl* and copy them to your project.
+
+== REQUIREMENTS
+. Create a Batchlet class that can execute multi-line native SQL code from a SQL script file.
+. Define a Batch Job the following sequential steps:
+.. Drop Foreign Keys
+.. Clear All (Truncate) Tables
+.. Fill DimCustomers table.
+.. Fill DimEmployees table.
+.. Fill DimProducts table.
+.. Fill DimDates table.
+.. Add Null Data Lookup Values.
+.. Fill FactOrders table.
+.. Add Foreign Key Constraints.
+. Run the Batch Job and verify all the tables in the *DWNorthwindOrders* database have data in them.
+. Add a Batch Job Listener to send an email with the following information:
+** *Mail To*:  Email address definied in `microprofile-config.properties`
+** *Subject*:  DMIT2015 Assginment 8 Batch Job Completion Status from YourFullName
+** *Body*:  The contents from each database table in the *DWNorthwindOrders* database format as an HTML table with column headings. The following code snippets shows to execute native SQL code to execute a query for the DimDates in the DWPubsSales database and to process the results returned.
+
+[source, java]
+----
+List<Object[]> dimDates = _entityManager
+                .createNativeQuery("Select Top 100 * from DWPubsSales.dbo.DimDates")
+                .getResultList();
+dimDates.forEach(row -> {
+    int dateKey = (int) row[0];
+    Timestamp date = (Timestamp) row[1];
+    String dataName = (String) row[2];
+    int month = (int) row[3];
+    String monthName = (String) row[4];
+    int quarter = (int) row[5];
+    String quarterName = (String) row[6];
+    int year = (int) row[7];
+    String yearName = (String) row[8];
+    
+    });
+        
+----
+. Run the Batch Job and verify than an email was sent after the batch job.
+
+== MARKING GUIDE
+
+[cols="4,1"]
+|===
+|Demonstration Requirement|Mark
+
+| Demonstrate that all tables in the *DWNorthwindOrders* database are empty before the batch job starts.
+| 1
+
+| Demonstrate that the *DimCustomers* table have correct data in it after the batch job completes.
+| 1
+
+| Demonstrate that the *DimEmployees* table have correct data in it after the batch job completes.
+| 1
+
+| Demonstrate that the *DimProducts* table have correct data in it after the batch job completes.
+| 1
+
+| Demonstrate that the *DimDates* table have correct data in it after the batch job completes.
+| 1
+
+| Demonstrate that the *FactOrders* table have correct data in it after the batch job completes.
+| 1
+
+| Demonstrate that an email is sent after the batch job completes with the contents of each table in the body of the email.
+(1 - mail sent, 2 - data is formatted in plain text, 3 - data is formatted as an HTML table)
+| 3 
+
+|===
+
+
+== SUBMISSION REQUIREMENTS
+* Demonstrate in person or upload a video of the demonstration requirements on or before the due date.
+* Commit and push your project to your git repository before the due date.
+
+== Resources
+* https://jakarta.ee/specifications/batch/2.0/jakarta-batch-spec-2.0.html[Jakarta Batch]
+* https://eclipse-ee4j.github.io/jakartaee-tutorial/#batch-processing[Batch Processing]
+* https://www.oracle.com/technical-resources/articles/java/batch-processing-ee-7.html[An Overview of Batch Processing in Java EE 7.0]
+* https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql[HQL and JPQL]
+* https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-conditional-expressions[JPQL Relational comparison]
