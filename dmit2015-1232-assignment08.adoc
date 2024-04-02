@@ -50,8 +50,8 @@ docker stop dmit2015-sqlserver
 
 == Create Northwind database and DWNorthwindOrders database
 . Start the Docker container for *dmit2015-sqlserver*
-. Download from Moodle the *InstNwnd.sql* SQL script file that contains the code to create the *Northwind* database.
-. Download from Moodle the *Create DWNorthwindOrders Script.sql* script file that contains the code to create the *DWNorthwindOrders* database.
+. Download from https://github.com/DMIT-2015/dmit2015-1232-assignment-specifications/tree/main/assignment08files[GitHub] the *InstNwnd.sql* SQL script file that contains the code to create the *Northwind* OLTP database.
+. Download from https://github.com/DMIT-2015/dmit2015-1232-assignment-specifications/tree/main/assignment08files[GitHub] the *Create DWNorthwindOrders Script.sql* script file that contains the code to create the *DWNorthwindOrders* OLAP database.
 . Open Azure Data Studio and double-click on the *localhost.DMITCourseDB* connection.\
 . From the main menu click "File | Open File..."
 .. The Browse dialog open. Navigate to the Downloads folder and select *InstNwnd.sql*.
@@ -59,6 +59,23 @@ docker stop dmit2015-sqlserver
 . From the main menu click "File | Open File..."
 .. The Browse dialog open. Navigate to the Downloads folder and select *Create DWNorthwindOrders Script.sql*.
 .. Execute the query by clicking on the *Run* button located in the toolbar.
+
+=== Using SQL Server on your Windows host machine instead of SQL Server docker container on Ubunbtu VM
+If you want to access the SQL Server running on your Windows host machine
+. Start SSMS and connect to your SQL Server instance.
+. In the Object Explorer view, right-mouse click on your server namme then select *Properties*
+. The *Server Properties* dialog opens. 
+.. Click on *Security* page. 
+... Set the *Server authentication* to *SQL Server and Windows Authenticataion mode*. 
+... Click *OK*.
+. In the Object Explorer view, right-mouse click on your server namme then select *Restart*
+. In the Object Explorer view, expand "Security | Logins". Right-mouse click on *Logins* folder then select "New Login..."
+. The "Login - New" dialog opens. 
+.. Create a new login name for *user2015* with "SQL Server authentication" option and password of *Password2015*. Uncheck *Enforce password policy*, *Enforce password expiration*, *User must change password at next login*.
+.. Click on the *Server Roles* page then check the Server role *sysadmin* then click *OK*.
+. Start "SQL Server Configuration Manager" (C:\Windows\SysWOW64\SQLServerManager16.msc).
+. In the "SQL Server Configuration Manager (Local)" view, expand "SQL Server Network Configuration | Protocols for MSSQLSERVER". Right-mouse click on *TCP/IP* then select *Enable*.
+. Restart the SQL Server instance from "SQL Server Services" node.
 
 == GIT REPOSITORY SETUP
 . Login to Moodle and navigate to the link to create a private github repository for this assignment.
@@ -68,8 +85,6 @@ docker stop dmit2015-sqlserver
 . You can now import the git repository to the *~/IdeaProjects* folder from IntelliJ IDEA or from a Terminal window.
 
 == PROJECT SETUP
-. Download the SQL script file to create the Northwind OLTP database from https://github.com/Apress/pro-sql-server-2012-bi-solutions/blob/master/_BookFiles/_SetupFiles/Databases/InstNwnd.sql
-. Download the SQL script to create the DWNorthwindOrdsers OLAP database from
 . Open IntelliJ IDEA and create a new project using the *Jakarta EE* module and change following settings:
  .. Name: `dmit2015-assignment08-yourname`
  .. Location: `~/IdeaProjects/yourAssignment08GithubRepo`
