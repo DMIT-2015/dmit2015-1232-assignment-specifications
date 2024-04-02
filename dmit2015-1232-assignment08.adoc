@@ -260,6 +260,7 @@ dimDates.forEach(row -> {
     });
         
 ----
+[start=5]
 . Run the Batch Job and verify than an email was sent after the batch job.
 
 == MARKING GUIDE
