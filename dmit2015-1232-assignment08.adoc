@@ -52,7 +52,7 @@ docker stop dmit2015-sqlserver
 . Start the Docker container for *dmit2015-sqlserver*
 . Download from https://github.com/DMIT-2015/dmit2015-1232-assignment-specifications/tree/main/assignment08files[GitHub] the *InstNwnd.sql* SQL script file that contains the code to create the *Northwind* OLTP database.
 . Download from https://github.com/DMIT-2015/dmit2015-1232-assignment-specifications/tree/main/assignment08files[GitHub] the *Create DWNorthwindOrders Script.sql* script file that contains the code to create the *DWNorthwindOrders* OLAP database.
-. Open Azure Data Studio and double-click on the *localhost.DMITCourseDB* connection.\
+. Open Azure Data Studio and double-click on the *localhost.DMIT2015sCourseDB* connection.\
 . From the main menu click "File | Open File..."
 .. The Browse dialog open. Navigate to the Downloads folder and select *InstNwnd.sql*.
 .. Execute the query by clicking on the *Run* button located in the toolbar.
@@ -62,6 +62,7 @@ docker stop dmit2015-sqlserver
 
 === Using SQL Server on your Windows host machine instead of SQL Server docker container on Ubunbtu VM
 If you want to access the SQL Server running on your Windows host machine
+
 . Start SSMS and connect to your SQL Server instance.
 . In the Object Explorer view, right-mouse click on your server namme then select *Properties*
 . The *Server Properties* dialog opens. 
