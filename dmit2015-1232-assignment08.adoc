@@ -79,7 +79,7 @@ If you want to access the SQL Server running on your Windows host machine
 . Restart the SQL Server instance from "SQL Server Services" node.
 
 == GIT REPOSITORY SETUP
-. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Login to https://github.com/DMIT-2015/dmit2015-1232-assignment-specifications/tree/main/assignment08files[GitHub] and navigate to the link to create a private github repository for this assignment.
 . Click on *Accept this assignment* to allow github to create a private github repository for you.
 . Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
 . Click on *Clone or download* button then copy the URL to your repository to the clipboard.
