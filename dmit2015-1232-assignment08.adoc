@@ -295,7 +295,7 @@ dimDates.forEach(row -> {
 
 
 == SUBMISSION REQUIREMENTS
-* Demonstrate in person or upload a video of the demonstration requirements on or before the due date.
+* Demonstrate in person of the demonstration requirements on or before the due date.
 * Commit and push your project to your git repository before the due date.
 
 == Resources
