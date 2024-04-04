@@ -52,7 +52,7 @@ docker stop dmit2015-sqlserver
 . Start the Docker container for *dmit2015-sqlserver*
 . Download from https://github.com/DMIT-2015/dmit2015-1232-assignment-specifications/tree/main/assignment08files[GitHub] the *InstNwnd.sql* SQL script file that contains the code to create the *Northwind* OLTP database.
 . Download from https://github.com/DMIT-2015/dmit2015-1232-assignment-specifications/tree/main/assignment08files[GitHub] the *Create DWNorthwindOrders Script.sql* script file that contains the code to create the *DWNorthwindOrders* OLAP database.
-. Open Azure Data Studio and double-click on the *localhost.DMIT2015sCourseDB* connection.\
+. Open Azure Data Studio and double-click on the *localhost.DMIT2015CourseDB* connection.\
 . From the main menu click "File | Open File..."
 .. The Browse dialog open. Navigate to the Downloads folder and select *InstNwnd.sql*.
 .. Execute the query by clicking on the *Run* button located in the toolbar.
@@ -237,7 +237,7 @@ poml.xml
 .. Add Foreign Key Constraints.
 . Run the Batch Job and verify all the tables in the *DWNorthwindOrders* database have data in them.
 . Add a Batch Job Listener to send an email with the following information:
-** *Mail To*:  Email address definied in `microprofile-config.properties`
+** *Mail To*:  Email address defined in `microprofile-config.properties`
 ** *Subject*:  DMIT2015 Assginment 8 Batch Job Completion Status from YourFullName
 ** *Body*:  The contents from each database table in the *DWNorthwindOrders* database format as an HTML table with column headings. The following code snippets shows to execute native SQL code to execute a query for the DimDates in the DWPubsSales database and to process the results returned.
 
