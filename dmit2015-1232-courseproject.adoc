@@ -1,0 +1,120 @@
+= DMIT2015 Course Project - Full Stack Development Research
+
+== OBJECTIVE
+Upon completion of this assignment, you will have demonstrated the ability to:
+
+- Research, implement, and present a REST Client frontend application using a frontend stack that has not been used in the course.
+- Research, implement, and present a REST API backend application using a backend stack that has not been used in the course.
+
+== PROBLEM DESCRIPTION
+In this course we have been using Jakarta EE platform and Eclipse Microservices to build full stack applications.
+In the course project you will explore and present other platform or frameworks you could use the build the backend and the frontend of a full stack application. 
+The dataset you will be using will be the the multi-user dataset you used for assignment 7.
+
+The frontend of a full stack application could be implemented using any one of following frontend frameworks:
+
+* React, Angular, Vue.js, Svelte (Javascript programming language)
+* ASP.NET Blazor Web App (C# programming language)
+* Native (iOS or Android) mobile app
+* PHP (PHP programming language)
+
+The frontend application must implement the following pages:
+
+* A page to find a single record.
+* A page to list all records.
+* A page to login and store the JWT returned for future usage.
+* A secured page to create a new record by calling an secured REST API endpoint.
+* A secured page to find, edit, and update an existing record by calling secured REST API endpoints.
+
+The backend application can be implemented using any one of the following backend frameworks:
+
+* https://spring.io/projects/spring-boot[Spring Boot], https://quarkus.io/[Quarkus], https://helidon.io/[Helidon], https://micronaut.io/[Micronaut] (Java programming language)
+* ASP.NET Core (C# programming language)
+* Express.js (Javascript programming language)
+* Laravel, CakePHP (PHP programming language)
+* Django, Flask (Python programming language)
+
+The backend application must implement a REST API with the following endpoints:
+
+* An secured endpoint to return a single record by a unique identifier field for the current authenticated user.
+* An secured endpoint to return a list of records associated with the current authenticated user.
+* An open endpoint to return a JWT for a database or LDAP account.
+* An secured endpoint to create a new record associated with the current authenticated user.
+* An secured endpoint to update an existing record assoicated with the current authenticated user.
+
+== GIT REPOSITORY SETUP
+. Login to Moodle and navigate to the link to create a private github repository for this assignment.
+. Click on *Accept this assignment* to allow github to create a private github repository for you.
+. Wait for the *You are ready to go!* messaage then click on the link to navigate to your assignment repository
+. Click on *Clone or download* button then copy the URL to your repository to the clipboard.
+. Put all the projects you created for this assignment in this repository.
+
+
+== REQUIREMENTS for REST client frontend application
+. Research and complete/download an guide/tutorial on a frontend framework that shows you how to access an REST API to perform CRUD functionality.
+. Using the completed guide project as a reference, create another project using the same frontend framework to access the REST API from your assignment 7 *dmit2015-assignment07-multiuser-restclient-start* project or from the backproject of this assignment.
+. Write a tutorial in the `README.md` file or create a video tutorial on the steps and code to fetch data from a REST API and to post data to a REST API.
+
+== REQUIREMENTS for REST services backend application
+. Research and complete an guide/tutorial on a backend framework that shows you how to create REST API endpoints to perform CRUD operations and queries on a database.
+. Using the completed guide project as a reference, create another project using the same backend framework to create REST API endpoints to perform CRUD operations and write queries using the same data you used in your *dmit2015-assignment07-multiuser-restclient-start* project.
+. Write a tutorial in the `README.md` file or create video tutorials on the steps and code:
+.. Perform CRUD operations and write queries on the same data you used in your *dmit2015-assignment07-multiuser-restclient-start* project.
+.. Create REST API endpoints to perform CRUD operations and execute queries on the same data you used in your *dmit2015-assignment07-multiuser-restclient-start* project.
+.. To authenticate an database or LDAP user and return a JWT for the authenticated user.
+.. Restrict access to REST API endpoints by role name.
+.. To logout or revoke a JWT token
+
+
+== MARKING GUIDE
+
+[cols="4,1"]
+|===
+| Requirement | Marks
+
+a| REST Client frontend application 
+
+* (3 marks) Present the guide you completed, its features, and highlight key concepts you learned from it.
+* (3 marks) Present the steps and code in your tutorial on how to fetch data from a REST API and display the returned content to the page.
+* (3 marks) Present the steps and code in your tutorial on how to handle a click event listener and how to post data to a secured REST API.
+* (1 mark) Demonstrate the process and the code to login and logout.
+* (1 mark) Demonstrate the page to find a single record associated with the authenticated user.
+* (1 mark) Demonstrate the page to find a list of records associated with the authenticated user.
+* (1 mark) Demonstrate the secure page to create a new record associated with the authenticated user.
+* (2 mark) Demonstrate the secure page to edit/update an existing record associated with the authenticated user.
+
+|15
+
+a| REST API endpoints backend application
+
+* (3 marks) Present the guide you completed, its features, and highlight key concepts you learned from it.
+* (3 marks) Present your tutorial on how to perform CRUD operations and write queries using the backend framework you have chosen.
+* (3 marks) Present your tutorial on how to create REST API endpoints to perform CRUD operations using the backend framework you have chosen.
+* (3 marks) Present your tutorial on how authenticate an database/ldap user and return a JWT using the backend framework you have chosen.
+* (1 mark) Present your tutorial on how to restrict access to REST API endpoints using the backend framework you have chosen.
+* (1 mark) Present your tutorial on how to logout and revoke an JWT token using the backend framework you have chosen.
+* (6 mark) Demonstrate using REST API testing tool of your choice the following REST API endpoints are working as expected:
+** Endpoint to get a JWT using username and password
+** Endpoint to create a single new record associated with the JWT
+** Endpoint to read a list of records associated with the JWT
+** Endpoint to update a single record associated with the JWT
+** Endpoint to delete a single record associated with the JWT
+** Logout/Revoke JWT for authenticated user
+
+|20
+
+
+|===
+
+== SUBMISSION/PRESENTATION/DEMONSTRATION REQUIREMENTS
+* Commit and push your project to your git repository before the due date.
+* There are two different deliverable dates for this assignment.
+** Frontend project is due at the beginning of the first class of Week 14.
+** Backend project is due at the beginning of the second class of Week 15.
+* Present your project to your instructor on the due date.
+
+== Resources
+* https://spring.io/guides[Spring Guides]
+* https://quarkus.io/guides/[Quarkus Guides]
+* https://helidon.io/docs/v3/#/mp/guides/overview[Helidon Guides]
+* https://guides.micronaut.io/latest/index.html[Micronaut Guides]

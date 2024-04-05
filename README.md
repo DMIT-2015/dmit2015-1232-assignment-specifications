@@ -9,7 +9,8 @@
 5. [Assignment 5](./dmit2015-1232-assignment05.adoc)
 6. [Assignment 6](./dmit2015-1232-assignment06.adoc)
 7. [Assignment 7](./dmit2015-1232-assignment07.adoc)
-7. [Assignment ](./dmit2015-1232-assignment08.adoc)
+8. [Assignment 8](./dmit2015-1232-assignment08.adoc)
+9. [Course Project](./dmit2015-1232-courseproject.adoc)
 
 ## Submission of assignment
 
