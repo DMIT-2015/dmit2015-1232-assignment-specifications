@@ -62,7 +62,6 @@ The backend application must implement a REST API with the following endpoints:
 .. Perform CRUD operations and write queries on the same data you used in your *dmit2015-assignment07-multiuser-restclient-start* project.
 .. Create REST API endpoints to perform CRUD operations and execute queries on the same data you used in your *dmit2015-assignment07-multiuser-restclient-start* project.
 .. To authenticate an database or LDAP user and return a JWT for the authenticated user.
-.. Restrict access to REST API endpoints by role name.
 .. To logout or revoke a JWT token
 
 
